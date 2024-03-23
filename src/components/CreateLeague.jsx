@@ -98,6 +98,7 @@ function CreateLeague() {
                 placeholder={'Nombre de la liga'}>
               </TextInput>
               <TouchableOpacity 
+                onPress={() => navigation.navigate('Team')}
                 style = {styles.CreateLeagueButton}>
                 <Text style = {styles.SearchText}>Crear Liga</Text>
               </TouchableOpacity>

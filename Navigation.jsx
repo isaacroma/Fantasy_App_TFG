@@ -5,6 +5,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Main from './src/components/Main.jsx';
 import Register from './src/components/Register.jsx';
 import CreateLeague from './src/components/CreateLeague.jsx';
+import Team from './src/components/Team.jsx';
 
 const HomeStackNavigator = createNativeStackNavigator();
 
@@ -29,6 +30,13 @@ function HomeStack() {
       <HomeStackNavigator.Screen
         name="CreateLeague"
         component={CreateLeague}
+        options={{
+          headerShown: false
+        }}
+      />
+      <HomeStackNavigator.Screen
+        name="Team"
+        component={Team}
         options={{
           headerShown: false
         }}
