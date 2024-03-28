@@ -97,7 +97,7 @@ function CreateLeague() {
                 style = {styles.CreateInput}
                 placeholder={'Nombre de la liga'}>
               </TextInput>
-              <TouchableOpacity 
+              <TouchableOpacity onPress={() => navigation.navigate('BottomTab')}
                 style = {styles.CreateLeagueButton}>
                 <Text style = {styles.SearchText}>Crear Liga</Text>
               </TouchableOpacity>
@@ -242,7 +242,7 @@ const styles = StyleSheet.create({
     right: 10
   },
 
-  //Creaqte League Modal
+  //Create League Modal
   CreateInputContainer: {
     alignItems: 'center',
     backgroundColor: 'white',
