@@ -1,5 +1,5 @@
-import React, {useState} from 'react'
-import {useNavigation} from '@react-navigation/native';
+import React, {useState, useRef} from 'react'
+import {useNavigation, useFocusEffect} from '@react-navigation/native';
 import { Entypo } from '@expo/vector-icons';
 import { FontAwesome6 } from '@expo/vector-icons';
 import { StyleSheet, Text, View, TouchableOpacity, TextInput, Modal, FlatList, ScrollView } from 'react-native';
@@ -10,6 +10,7 @@ function Market() {
   const navigation = useNavigation();
 
   //Variables
+  const scrollViewRef = useRef(null);
   const [selectedPlayer, setSelectedPlayer] = useState(null);
   const [BuyButtonPressed, setBuyButtonPressed] = useState(false);
   const players = [
@@ -26,6 +27,12 @@ function Market() {
   ];
 
   //Functions
+  useFocusEffect(
+    React.useCallback(() => {
+      scrollViewRef.current.scrollTo({ y: 0, animated: false });
+    }, [])
+  );
+  
   const handleBuyPlayer = (player) => {
     setSelectedPlayer(player);
     setBuyButtonPressed(true);
@@ -57,7 +64,7 @@ function Market() {
           style = {styles.MoneyIcon}
         />
       </View>
-      <ScrollView style = {styles.ScrollView}>
+      <ScrollView ref={scrollViewRef} style = {styles.ScrollView}>
         {players.map((player, index) => {
           return (
             <View style = {styles.PlayerContainer} key={index}>

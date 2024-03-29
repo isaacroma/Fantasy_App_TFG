@@ -12,7 +12,7 @@ function SearchPlayers() {
 
   //Variables
   const scrollViewRef = useRef(null);
-  const [selectedPlayer, setSelectedPlayer] = useState(null);
+  //const [selectedPlayer, setSelectedPlayer] = useState(null);
   const [FilterButtonPresses, setFilterButtonPressed] = useState(false);
   const [favoritePlayers, setFavoritePlayers] = useState([]);
   const players = [

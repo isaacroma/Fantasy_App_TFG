@@ -1,65 +1,96 @@
-import React, {useState} from 'react'
-import {useNavigation} from '@react-navigation/native';
+import React, {useState, useRef} from 'react'
+import {useNavigation, useFocusEffect} from '@react-navigation/native';
 import { FontAwesome5 } from '@expo/vector-icons';
-import { StyleSheet, Text, View, TouchableOpacity, TextInput, Modal, FlatList } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, TextInput, Modal, FlatList, ScrollView } from 'react-native';
 
 function Clasification() {
 
-  //Navigation
-  const navigation = useNavigation();
+    //Navigation
+    const navigation = useNavigation();
 
-  //Variables
-  const [users, setUsers] = useState(['user1', 'user2', 'user3', 'user4', 'user5', 'user6', 'user7', 'user8']);
-
-
-  //Functions
-  const renderItem =({item}) => {
+    //Variables
+    const scrollViewRef = useRef(null);
+    const [isGeneralButtonActive, setisGeneralButtonActive] = useState(true);
+    const [isJourneyButtonActive, setisJourneyButtonActive] = useState(false);
+    const users = [
+        { name: 'Usuario 1', points: 1250},
+        { name: 'Usuario 2', points: 1200},
+        { name: 'Usuario 3', points: 1190},
+        { name: 'Usuario 4', points: 1000},
+        { name: 'Usuario 5', points: 850},
+        { name: 'Usuario 6', points: 849},
+        { name: 'Usuario 7', points: 600},
+        { name: 'Usuario 8', points: 550},
+        { name: 'Usuario 9', points: 520},
+        { name: 'Usuario 10', points: 500}
+    ];
+    //Functions
+    useFocusEffect(
+        React.useCallback(() => {
+          scrollViewRef.current.scrollTo({ y: 0, animated: false });
+        }, [])
+    );
+    const handlePressGeneralButton = () => {
+        setisGeneralButtonActive(true);
+        setisJourneyButtonActive(false);
+      };
     
-    return (
-        <View style={styles.UsersWrapper}>
-            <Text style = {styles.UserName}>{users}</Text>
-        </View>
-    )
-  }
+      const handlePressJourneyButton = () => {
+        setisGeneralButtonActive(false);
+        setisJourneyButtonActive(true);
+      };
 
-  return (
-    <View style = {styles.MainContainer}>
-        <View style = {styles.HeaderContainer}>
-            <Text style = {styles.PrincipalTitle}>Clasificación</Text>
-            <FontAwesome5 
-                name="trophy" 
-                size={70} 
-                color="#EBCC05"
-                style = {styles.TrophyIcon}
-            />
+    return (
+        <View style = {styles.MainContainer}>
+            <View style = {styles.HeaderContainer}>
+                <Text style = {styles.PrincipalTitle}>Clasificación</Text>
+                <FontAwesome5 
+                    name="trophy" 
+                    size={70} 
+                    color="#EBCC05"
+                    style = {styles.TrophyIcon}
+                />
+            </View>
+            <View style = {styles.ButtonsContainer}>
+                <TouchableOpacity 
+                    style = {[styles.GeneralButton, { backgroundColor: isGeneralButtonActive ? '#2DBC07' : '#DCDCDC' }]}
+                    onPress={handlePressGeneralButton}>
+                    <Text style = {styles.Text}>General</Text>
+                </TouchableOpacity>
+                <TouchableOpacity 
+                    style = {[styles.JourneyButton, { backgroundColor: isJourneyButtonActive ? '#2DBC07' : '#DCDCDC' }]}
+                    onPress={handlePressJourneyButton}>
+                    <Text style = {styles.Text}>Jornada</Text>
+                </TouchableOpacity>
+            </View>
+            <ScrollView ref={scrollViewRef} style = {styles.ScrollView}>
+                {users.map((user, index) => {
+                    return (
+                    <View style = {styles.UserContainer} key={index}>
+                        <Text style = {styles.UserName}>{user.name}</Text>
+                        <View style = {styles.UserPointsContainer}>
+                            <Text style = {styles.UserPoints}>{user.points}</Text>
+                        </View>
+                    </View>
+                    );
+                })}
+            </ScrollView>
+
         </View>
-        <View style = {styles.ButtonsContainer}>
-            <TouchableOpacity style = {styles.GeneralButton}>
-                <Text style = {styles.Text}>General</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style = {styles.JourneyButton}>
-                <Text style = {styles.Text}>Jornada</Text>
-            </TouchableOpacity>
-        </View>
-        <View style = {styles.UsersContainer}>
-            <FlatList
-                data={users}
-                renderItem={renderItem}/>
-        </View>
-    </View>
-  );
+    );
 }
 
 const styles = StyleSheet.create({
     MainContainer: {
         flex: 1,
-        backgroundColor: '#fff',
+        backgroundColor: 'white',
         alignItems: 'center',
     },
     HeaderContainer: {
         alignItems: 'center',
         justifyContent: 'center',
-        flexDirection: 'row'
+        flexDirection: 'row',
+        width: '100%',
     },
     PrincipalTitle: {
         marginTop: 35,
@@ -71,6 +102,10 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         flexDirection: 'row',
         marginTop: 20,
+        width: '100%',
+        height: '7%',
+        borderBottomWidth: 2,
+        marginBottom: 5,
     },
     GeneralButton: {
         alignItems: 'center',
@@ -81,7 +116,8 @@ const styles = StyleSheet.create({
         backgroundColor: '#2DBC07',
         marginRight: 5,
         borderWidth: 1,
-        elevation: 15
+        elevation: 15,
+        marginBottom: 5
     },
     JourneyButton: {
         alignItems: 'center',
@@ -92,30 +128,11 @@ const styles = StyleSheet.create({
         backgroundColor: '#E8E8E8',
         marginLeft: 5,
         borderWidth: 1,
-        elevation: 15
+        elevation: 15,
+        marginBottom: 5
     },
     Text: {
         fontWeight: 'bold'
-    },
-    UsersContainer: {
-        width: '100%',
-        height: 550,
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: '#E8E8E8',
-        //borderRadius: 15,
-        marginTop: 10,
-        borderTopWidth: 2
-    },
-    UsersWrapper: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingHorizontal: 5,
-        paddingVertical: 5,
-        borderBottomWidth: 1,
-        height: 75,
-        width: 400,
-        borderRadius: 15,
     },
 
     //Icons
@@ -124,7 +141,43 @@ const styles = StyleSheet.create({
         marginTop: 40,
         marginLeft: 15
     },
-    
+
+    //Users
+    ScrollView: {
+        backgroundColor: 'white',
+        width: '100%'
+    },
+    UserContainer: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '100%',
+        height: 75,
+        marginBottom: 5,
+        flexDirection: 'row',
+        borderRadius: 30,
+        borderWidth: 2,
+        backgroundColor: '#DCDCDC',
+    },
+    UserName: {
+        fontWeight: 'bold',
+        fontSize: 20,
+        right: '80%'
+    },
+    UserPointsContainer: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '30%',
+        height: 30,
+        borderRadius: 20,
+        borderWidth: 1,
+        backgroundColor: '#BA82F1',
+        left: '80%',
+        elevation: 20
+    },
+    UserPoints: {
+        fontWeight: 'bold',
+        fontSize: 15
+    }   
 });
 
 export default Clasification;
