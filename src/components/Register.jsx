@@ -1,11 +1,29 @@
-import React from 'react'
+import React, {useState} from 'react'
 import {useNavigation} from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
-import { StyleSheet, Text, View, TouchableOpacity, TextInput } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, TextInput, Alert } from 'react-native';
+import { getFirebaseAuth, registerUser } from './FirebaseFunctions';
+
 
 function Register() {
 
-    const navigation = useNavigation();
+  //Variables
+  const navigation = useNavigation();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const auth = getFirebaseAuth();
+
+  //Functions
+  const handleRegister = () => {
+    registerUser(auth, email, password)
+      .then(() => {
+        navigation.navigate('Home');
+      })
+      .catch(error => {
+        Alert.alert(error.message);
+      });
+  }
 
   return (
     <View style = {styles.MainContainer}>
@@ -24,14 +42,16 @@ function Register() {
         </TextInput>
         <TextInput
           style = {styles.Input}
+          onChangeText={setEmail}
           placeholder={'Correo electronico'}>
         </TextInput>
         <TextInput
           style = {styles.Input}
+          onChangeText={setPassword}
           placeholder={'Contraseña'}>
         </TextInput>
         <TouchableOpacity 
-        onPress={() => navigation.navigate('Home')}
+        onPress={handleRegister}
         style = {styles.RegisterButton}>
           <Text style = {styles.RegisterText}>Registrarse</Text>
         </TouchableOpacity>

@@ -1,13 +1,30 @@
-import React from 'react'
+import React, {useState} from 'react'
 import {useNavigation} from '@react-navigation/native'
 import { Ionicons } from '@expo/vector-icons';
-import { StyleSheet, Text, View, TouchableOpacity, TextInput, Image } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, TextInput, Alert } from 'react-native';
+import { initializeFirebase, getFirebaseAuth, loginUser } from './FirebaseFunctions';
 
-const logoImg = require('../../assets/LogoApp.png')
 
 function Main() {
 
+  //Variables
   const navigation = useNavigation();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const app = initializeFirebase();
+  const auth = getFirebaseAuth();
+
+  //Functions
+  const handleLogin = () => {
+    loginUser(auth, email, password)
+    .then(() => {
+      navigation.navigate('CreateLeague');
+    })
+    .catch(error => {
+      Alert.alert(error.message);
+    });
+  }
 
   return (
     <View style = {styles.MainContainer}>
@@ -22,14 +39,16 @@ function Main() {
       <View style = {styles.InputsContainer}>
         <TextInput
           style = {styles.Input}
+          onChangeText={setEmail}
           placeholder={'Nombre de usuario'}>
         </TextInput>
         <TextInput
           style = {styles.Input}
+          onChangeText={setPassword}
           placeholder={'Contraseña'}>
         </TextInput>
         <TouchableOpacity 
-        onPress={() => navigation.navigate('CreateLeague')}
+        onPress={handleLogin}
         style = {styles.LoginButton}>
           <Text style = {styles.LoginText}>Iniciar sesión</Text>
         </TouchableOpacity>
