@@ -9,6 +9,7 @@ function Register() {
 
   //Variables
   const navigation = useNavigation();
+  const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -16,7 +17,7 @@ function Register() {
 
   //Functions
   const handleRegister = () => {
-    registerUser(auth, email, password)
+    registerUser(auth, username, email, password)
       .then(() => {
         navigation.navigate('Home');
       })
@@ -38,6 +39,7 @@ function Register() {
       <View style = {styles.InputsContainer}>
         <TextInput
           style = {styles.Input}
+          onChangeText={setUsername}
           placeholder={'Nombre de usuario'}>
         </TextInput>
         <TextInput

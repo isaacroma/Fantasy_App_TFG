@@ -1,8 +1,8 @@
-import React, {useState} from 'react'
-import {useNavigation} from '@react-navigation/native'
+import React, {useState, useCallback} from 'react'
+import {useNavigation, useFocusEffect} from '@react-navigation/native'
 import { Ionicons } from '@expo/vector-icons';
 import { StyleSheet, Text, View, TouchableOpacity, TextInput, Alert } from 'react-native';
-import { initializeFirebase, getFirebaseAuth, loginUser } from './FirebaseFunctions';
+import { initializeFirebase, getFirebaseAuth, loginUser, getUserLeague } from './FirebaseFunctions';
 
 
 function Main() {
@@ -16,10 +16,25 @@ function Main() {
   const auth = getFirebaseAuth();
 
   //Functions
+  useFocusEffect(
+    useCallback(() => {
+      // Restablecer los valores de los email y password cuando la pantalla se enfoca
+      setEmail("");
+      setPassword("");
+    }, [])
+  );
+
   const handleLogin = () => {
     loginUser(auth, email, password)
     .then(() => {
-      navigation.navigate('CreateLeague');
+      getUserLeague()
+      .then((data) => {
+        if (data == '0') {
+          navigation.navigate('CreateLeague');
+        } else if (data == '1') {
+          navigation.navigate('BottomTab');
+        }
+      })
     })
     .catch(error => {
       Alert.alert(error.message);
@@ -40,12 +55,14 @@ function Main() {
         <TextInput
           style = {styles.Input}
           onChangeText={setEmail}
-          placeholder={'Nombre de usuario'}>
+          placeholder={'Email'}
+          value = {email}>
         </TextInput>
         <TextInput
           style = {styles.Input}
           onChangeText={setPassword}
-          placeholder={'Contraseña'}>
+          placeholder={'Contraseña'}
+          value = {password}>
         </TextInput>
         <TouchableOpacity 
         onPress={handleLogin}
