@@ -2,7 +2,7 @@ import React from 'react';
 import { Alert } from 'react-native';
 import { initializeApp } from 'firebase/app';
 import { getFirestore, collection, addDoc, setDoc, getDoc, query, where, getDocs, updateDoc, doc, arrayUnion } from 'firebase/firestore';
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from 'firebase/auth';
 import { firebaseConfig } from '../../firebase-config'; 
 
 let app = null;
@@ -52,6 +52,11 @@ export const loginUser = (auth, email, password) => {
   return signInWithEmailAndPassword(auth, email, password);
 };
 
+//Función para cerrar sesión
+export const signOutUser = (auth) => {
+  return signOut(auth);
+};
+
 export const getUserLeague = async () => {
   try {
     const auth = getAuth(app);
@@ -95,7 +100,7 @@ export const createLeague = async (leagueName) => {
             throw new Error('Ya existe una liga con este nombre');
         } else {
             const memberData = {
-                email: user.email
+                userId: user.uid
             };
                 
             // Crear el documento en la colección "Leagues" con el nombre proporcionado
@@ -174,6 +179,17 @@ export const searchAllLeagues = async () => {
   }
 };
 
+//Funcion para comprobar si hay un usuario logueado
+export const checkloggedUser = async () => {
+  const auth = getAuth(app);
+  const user = auth.currentUser;
+  if (user) {
+    console.log('Logged in user: ' + user.uid);
+  } else {
+    console.log('No user logged in');
+  }
+}
+
 ///Función para crear un documento en la colección "Leagues" asociada al usuario logueado
 export const joinLeague = async (leagueName) => {
   try {
@@ -215,3 +231,115 @@ export const joinLeague = async (leagueName) => {
   }
 };
 
+//Función que devuelve todos los jugadores
+export const obtainPlayers = async() => {
+  try {
+    const db = getFirestore(app);
+    const playersCollection = collection(db, 'Players');
+
+    //Devuelve todas las ligas
+    const querySnapshot = await getDocs(playersCollection);
+
+    const playersData = [];
+    // Itera sobre los resultados de la consulta
+    querySnapshot.forEach((doc) => {
+      // Accede a los datos del documento
+      const data = doc.data();
+      playersData.push(data);
+    });
+
+    // Devuelve los datos de las ligas encontradas
+    return playersData;
+
+  } catch (error) {
+      console.error('Error al buscar los jugadores:', error);
+      return false; 
+  }
+}
+
+//Función que devuelve el jugador con el nombre especificado
+export const searchPlayer = async (playerName) => {
+  try {
+    // Crea una consulta para buscar documentos en la colección "Leagues" con el nombre proporcionado
+    const db = getFirestore(app);
+    const playersCollection = collection(db, 'Players');
+    const normalizedPlayerName = playerName.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    const playersQuery = query(playersCollection);
+
+    // Ejecuta la consulta
+    const querySnapshot = await getDocs(playersQuery);
+
+    const playersData = [];
+    // Itera sobre los resultados de la consulta
+    querySnapshot.forEach((doc) => {
+      // Accede a los datos del documento
+      const data = doc.data();
+      const normalizedName = data.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+      if (normalizedName.includes(normalizedPlayerName)) {
+        playersData.push(data);
+      }
+    });
+
+    // Devuelve los datos de las ligas encontradas
+    return playersData;
+    
+  } catch (error) {
+      console.error('Error al buscar un jugador:', error);
+      return false; 
+  }
+}
+
+//Función que filtra los jugadores segun la posicion
+export const filterPlayersByPosition = async (position) => {
+  try {
+    // Crea una consulta para buscar documentos en la colección "Leagues" con el nombre proporcionado
+    const db = getFirestore(app);
+    const playersCollection = collection(db, 'Players');
+    const playersQuery = query(playersCollection, where('position', '==', position));
+
+    // Ejecuta la consulta
+    const querySnapshot = await getDocs(playersQuery);
+
+    const playersData = [];
+    // Itera sobre los resultados de la consulta
+    querySnapshot.forEach((doc) => {
+      // Accede a los datos del documento
+      const data = doc.data();
+      playersData.push(data); 
+    });
+
+    // Devuelve los datos de los jugadores encontrados
+    return playersData;
+    
+  } catch (error) {
+      console.error('Error al filtrar los jugadores por posición:', error);
+      return false; 
+  }
+}
+
+export const filterPlayersByPrice = async (min, max) => {
+  try {
+    // Crea una consulta para buscar documentos en la colección "Leagues" con el nombre proporcionado
+    const db = getFirestore(app);
+    const playersCollection = collection(db, 'Players');
+    const playersQuery = query(playersCollection, where('price', '>=', min), where('price', '<=', max));
+
+    // Ejecuta la consulta
+    const querySnapshot = await getDocs(playersQuery);
+
+    const playersData = [];
+    // Itera sobre los resultados de la consulta
+    querySnapshot.forEach((doc) => {
+      // Accede a los datos del documento
+      const data = doc.data();
+      playersData.push(data); 
+    });
+
+    // Devuelve los datos de los jugadores encontrados
+    return playersData;
+    
+  } catch (error) {
+      console.error('Error al filtrar los jugadores por precio:', error);
+      return false; 
+  }
+}

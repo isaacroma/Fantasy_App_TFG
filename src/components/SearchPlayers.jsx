@@ -1,9 +1,10 @@
-import React, {useState, useRef} from 'react'
+import React, {useState, useRef, useEffect} from 'react'
 import {useNavigation, useFocusEffect} from '@react-navigation/native';
 import { Entypo } from '@expo/vector-icons';
 import { FontAwesome6 } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
 import { StyleSheet, Text, View, TouchableOpacity, TextInput, Modal, FlatList, ScrollView } from 'react-native';
+import { obtainPlayers, searchPlayer, filterPlayersByPosition, filterPlayersByPrice } from './FirebaseFunctions';
 
 function SearchPlayers() {
 
@@ -15,28 +16,18 @@ function SearchPlayers() {
   //const [selectedPlayer, setSelectedPlayer] = useState(null);
   const [FilterButtonPresses, setFilterButtonPressed] = useState(false);
   const [favoritePlayers, setFavoritePlayers] = useState([]);
-  const players = [
-    { name: 'Jugador 1', position: 'DC', price: 1000000 },
-    { name: 'Jugador 2', position: 'DFC', price: 800000 },
-    { name: 'Jugador 3', position: 'MC', price: 1200000 },
-    { name: 'Jugador 4', position: 'POR', price: 600000 },
-    { name: 'Jugador 5', position: 'DC', price: 1500000 },
-    { name: 'Jugador 6', position: 'DFC', price: 700000 },
-    { name: 'Jugador 7', position: 'MC', price: 1100000 },
-    { name: 'Jugador 8', position: 'MC', price: 650000 },
-    { name: 'Jugador 9', position: 'DFC', price: 1300000 },
-    { name: 'Jugador 10', position: 'DC', price: 750000 },
-    { name: 'Jugador 11', position: 'DC', price: 1000000 },
-    { name: 'Jugador 12', position: 'DFC', price: 800000 },
-    { name: 'Jugador 13', position: 'MC', price: 1200000 },
-    { name: 'Jugador 14', position: 'POR', price: 600000 },
-    { name: 'Jugador 15', position: 'DC', price: 1500000 },
-    { name: 'Jugador 16', position: 'DFC', price: 700000 },
-    { name: 'Jugador 17', position: 'MC', price: 1100000 },
-    { name: 'Jugador 18', position: 'MC', price: 650000 },
-    { name: 'Jugador 19', position: 'DFC', price: 1300000 },
-    { name: 'Jugador 20', position: 'DC', price: 750000 }
-  ];
+  const [players, setPlayers] = useState([]);
+  const [allPlayers, setAllPlayers] = useState([]);
+  const [playerName, setPlayerName] = useState('');
+  const [searchText, setSearchText] = useState('');
+  const [PORButtonPressed, setPORButtonPressed] = useState(false);
+  const [DFCButtonPressed, setDFCButtonPressed] = useState(false);
+  const [MCButtonPressed, setMCButtonPressed] = useState(false);
+  const [DCButtonPressed, setDCButtonPressed] = useState(false);
+  const [Price1ButtonPressed, setPrice1ButtonPressed] = useState(false);
+  const [Price2ButtonPressed, setPrice2ButtonPressed] = useState(false);
+  const [Price3ButtonPressed, setPrice3ButtonPressed] = useState(false);
+  const [Price4ButtonPressed, setPrice4ButtonPressed] = useState(false);
 
   //Functions
   useFocusEffect(
@@ -44,9 +35,26 @@ function SearchPlayers() {
       scrollViewRef.current.scrollTo({ y: 0, animated: false });
     }, [])
   );
+
+  useEffect(() => {
+    handleObtainPlayers();
+  }, []);
+
+  const handleObtainPlayers = () => {
+    obtainPlayers()
+    .then((data) => {
+      setAllPlayers(data);
+      setPlayers(data);
+    })
+    .catch(error => {
+      Alert.alert(error.message);
+    });
+  };
+
   const handleFilters = () => {
     setFilterButtonPressed(true);
   }
+
   const toggleFavorite = (index) => {
     const updatedFavorites = [...favoritePlayers];
     updatedFavorites[index] = !updatedFavorites[index];
@@ -68,12 +76,93 @@ function SearchPlayers() {
     }
   }
 
+  const handleSearchPlayer = (text) => {
+    setSearchText(text); 
+ 
+    if (text.length > 0) {
+      searchPlayer(text)
+        .then((data) => {
+          setPlayers(data);
+        })
+        .catch((error) => {
+          Alert.alert(error.message);
+        });
+    } else {
+      setPlayers(allPlayers);
+    }
+  };
+
+  const handleFilterPlayersByPosition = (position) => {
+    if (position == 'POR') {
+      setPORButtonPressed(true);
+      setDFCButtonPressed(false);
+      setMCButtonPressed(false);
+      setDCButtonPressed(false);
+    } else if (position == 'DFC') {
+      setPORButtonPressed(false);
+      setDFCButtonPressed(true);
+      setMCButtonPressed(false);
+      setDCButtonPressed(false);
+    } else if (position == 'MC') {
+      setPORButtonPressed(false);
+      setDFCButtonPressed(false);
+      setMCButtonPressed(true);
+      setDCButtonPressed(false);
+    } else {
+      setPORButtonPressed(false);
+      setDFCButtonPressed(false);
+      setMCButtonPressed(false);
+      setDCButtonPressed(true);
+    }
+
+    filterPlayersByPosition(position)
+    .then((data) => {
+      setPlayers(data);
+    })
+    .catch((error) => {
+      Alert.alert(error.message);
+    });
+  }
+
+  const handleFilterPlayersByPrice = (min, max) => {
+    if (min == 0 && max == 1000000) {
+      setPrice1ButtonPressed(true);
+      setPrice2ButtonPressed(false);
+      setPrice3ButtonPressed(false);
+      setPrice4ButtonPressed(false);
+    } else if (min == 1000000 && max == 5000000) {
+      setPrice1ButtonPressed(false);
+      setPrice2ButtonPressed(true);
+      setPrice3ButtonPressed(false);
+      setPrice4ButtonPressed(false);
+    } else if (min == 5000000 && max == 10000000) {
+      setPrice1ButtonPressed(false);
+      setPrice2ButtonPressed(false);
+      setPrice3ButtonPressed(true);
+      setPrice4ButtonPressed(false);
+    } else {
+      setPrice1ButtonPressed(false);
+      setPrice2ButtonPressed(false);
+      setPrice3ButtonPressed(false);
+      setPrice4ButtonPressed(true);
+    }
+
+    filterPlayersByPrice(min, max)
+    .then((data) => {
+      setPlayers(data);
+    })
+    .catch((error) => {
+      Alert.alert(error.message);
+    });
+  } 
+
   return (
     <View style = {styles.MainContainer}>
       <View style = {styles.HeaderContainer}>
         <View style = {styles.SearchContainer}>
           <TextInput
             style = {styles.SearchInput}
+            onChangeText={handleSearchPlayer}
             placeholder={'Buscar jugador'}>
           </TextInput>
           <TouchableOpacity style = {styles.SearchButton}>
@@ -101,7 +190,7 @@ function SearchPlayers() {
             </View>
             <View style = {styles.PlayerNamePointsContainer}>
               <Text style = {styles.PlayerName}>{player.name}</Text>
-              <Text style = {styles.PlayerPoints}>105</Text>
+              <Text style = {styles.PlayerPoints}>{player.points}</Text>
             </View>
             <TouchableOpacity 
               style = {styles.FavoriteButton}
@@ -131,16 +220,20 @@ function SearchPlayers() {
             <View style = {styles.PositionFilterContainer}>
               <Text style = {styles.Text}>Posición</Text>
               <View style = {styles.PositionButtonsContainer}>
-                <TouchableOpacity style = {styles.PORButton}>
+                <TouchableOpacity onPress={() => handleFilterPlayersByPosition('POR')}
+                style = {[styles.PORButton, { backgroundColor: PORButtonPressed ? '#2DBC07' : '#DCDCDC' }]}>
                   <Text style = {styles.Text}>POR</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style = {styles.DFCButton}>
+                <TouchableOpacity onPress={() => handleFilterPlayersByPosition('DFC')}
+                style = {[styles.DFCButton, { backgroundColor: DFCButtonPressed ? '#2DBC07' : '#DCDCDC' }]}>
                   <Text style = {styles.Text}>DFC</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style = {styles.MCButton}>
+                <TouchableOpacity onPress={() => handleFilterPlayersByPosition('MC')}
+                style = {[styles.MCButton, { backgroundColor: MCButtonPressed ? '#2DBC07' : '#DCDCDC' }]}>
                   <Text style = {styles.Text}>MC</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style = {styles.DCButton}>
+                <TouchableOpacity onPress={() => handleFilterPlayersByPosition('DC')}
+                style = {[styles.DCButton, { backgroundColor: DCButtonPressed ? '#2DBC07' : '#DCDCDC' }]}>
                   <Text style = {styles.Text}>DC</Text>
                 </TouchableOpacity>
               </View>
@@ -149,16 +242,20 @@ function SearchPlayers() {
             <View style = {styles.PriceFilterContainer}>
               <Text style = {styles.Text}>Precio</Text>
               <View style = {styles.PriceButtonsContainer}>
-                <TouchableOpacity style = {styles.Price1Button}>
+                <TouchableOpacity onPress={() => handleFilterPlayersByPrice(0, 1000000)}
+                style = {[styles.Price1Button, { backgroundColor: Price1ButtonPressed ? '#2DBC07' : '#DCDCDC' }]}>
                   <Text style = {styles.Text}>0-1M</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style = {styles.Price2Button}>
+                <TouchableOpacity onPress={() => handleFilterPlayersByPrice(1000000, 5000000)}
+                style = {[styles.Price2Button, { backgroundColor: Price2ButtonPressed ? '#2DBC07' : '#DCDCDC' }]}>
                   <Text style = {styles.Text}>1-5M</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style = {styles.Price3Button}>
+                <TouchableOpacity onPress={() => handleFilterPlayersByPrice(5000000, 10000000)}
+                style = {[styles.Price3Button, { backgroundColor: Price3ButtonPressed ? '#2DBC07' : '#DCDCDC' }]}>
                   <Text style = {styles.Text}>5-10M</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style = {styles.Price4Button}>
+                <TouchableOpacity onPress={() => handleFilterPlayersByPrice(10000000, 99999999)}
+                style = {[styles.Price4Button, { backgroundColor: Price4ButtonPressed ? '#2DBC07' : '#DCDCDC' }]}>
                   <Text style = {styles.Text}>+10M</Text>
                 </TouchableOpacity>
               </View>

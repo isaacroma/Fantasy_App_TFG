@@ -1,12 +1,28 @@
 import React, {useState} from 'react'
 import {useNavigation} from '@react-navigation/native';
 import { StyleSheet, Text, View, TouchableOpacity, TextInput, Modal, FlatList } from 'react-native';
+import { getFirebaseAuth, signOutUser, checkloggedUser } from './FirebaseFunctions';
 
 function Configuration() {
 
-  //Navigation
+  //Variables
   const navigation = useNavigation();
 
+  const auth = getFirebaseAuth();
+
+  //Functions
+  const handleSignOut = () => {
+    signOutUser(auth)
+    .then(() => {
+        checkloggedUser()
+        .then(() => {
+            navigation.navigate('Home');
+        })
+    })
+    .catch(error => {
+        Alert.alert(error.message);
+    });
+  }
 
   return (
     <View style = {styles.MainContainer}>
@@ -15,7 +31,8 @@ function Configuration() {
             <TouchableOpacity style = {styles.EditProfileButton}>
                 <Text style = {styles.EditProfileText}>Editar perfil</Text>
             </TouchableOpacity>
-            <TouchableOpacity style = {styles.CloseSesionButton}>
+            <TouchableOpacity onPress={handleSignOut}
+            style = {styles.CloseSesionButton}>
                 <Text style = {styles.CloseSesionText}>Cerrar sesión</Text>
             </TouchableOpacity>
         </View>
