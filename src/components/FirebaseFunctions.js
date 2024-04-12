@@ -100,20 +100,23 @@ export const createLeague = async (leagueName) => {
             throw new Error('Ya existe una liga con este nombre');
         } else {
             const memberData = {
-                userId: user.uid
+                userId: user.uid,
+                points: 0,
+                favoritePlayers: []
             };
                 
             // Crear el documento en la colección "Leagues" con el nombre proporcionado
-            await addDoc(leaguesCollection, {
+            const newLeagueRef = await addDoc(leaguesCollection, {
                 name: leagueName,
                 ownerId: user.uid,
                 members:  [memberData]
             });
 
+            const leagueId = newLeagueRef.id;
             const userDocRef = doc(db, 'Users', user.uid);            
 
             await updateDoc(userDocRef, {
-              league: leagueName
+              league: leagueId
             });
             
             return true; 
@@ -218,7 +221,14 @@ export const joinLeague = async (leagueName) => {
 
       // Actualiza el documento para añadir al nuevo miembro al array "members"
       await updateDoc(leagueDocRef, {
-        members: arrayUnion({email: user.email})
+        members: arrayUnion({userId: user.uid, points: 0, favoritePlayers: []})
+      });
+
+      
+      const userDocRef = doc(db, 'Users', user.uid);            
+
+      await updateDoc(userDocRef, {
+        league: querySnapshot.docs[0].id
       });
 
       console.log('Usuario se ha unido a la liga');
@@ -343,3 +353,43 @@ export const filterPlayersByPrice = async (min, max) => {
       return false; 
   }
 }
+
+//Función para registrar un nuevo usuario
+export const addFovoritePlayer = async (playerName) => {
+  try {
+    const auth = getAuth(app);
+    const user = auth.currentUser;
+    const db = getFirestore(app);
+    const userDocRef = doc(db, 'Users', user.uid);
+
+    const userDocSnap = await getDoc(userDocRef);
+    if (userDocSnap.exists()) {
+      const userData = userDocSnap.data();
+
+      const leagueDocRef = doc(db, 'Leagues', userData.league);
+      const docSnapshot = await getDoc(leagueDocRef);
+      if (docSnapshot.exists()) {
+        const data = docSnapshot.data();
+        const members = data.members;
+        console.log(members);
+        for (const member of members) {
+          console.log(member.userId);
+          if (member.userId === user.uid) {
+              const favoritePlayers = member.favoritePlayers;
+              if (!favoritePlayers.includes(playerName)) {
+                  member.favoritePlayers = [...favoritePlayers, playerName];
+                  break;
+              }
+          }
+        }
+        await updateDoc(leagueDocRef, { members: members });
+
+        return true;
+      }
+    } 
+  } catch (error) {
+    console.error('Error al añadir un jugador a favoritos:', error);
+    return false; 
+  }
+};
+

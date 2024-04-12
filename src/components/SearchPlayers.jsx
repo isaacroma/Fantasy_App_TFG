@@ -3,8 +3,8 @@ import {useNavigation, useFocusEffect} from '@react-navigation/native';
 import { Entypo } from '@expo/vector-icons';
 import { FontAwesome6 } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
-import { StyleSheet, Text, View, TouchableOpacity, TextInput, Modal, FlatList, ScrollView } from 'react-native';
-import { obtainPlayers, searchPlayer, filterPlayersByPosition, filterPlayersByPrice } from './FirebaseFunctions';
+import { StyleSheet, Text, View, TouchableOpacity, TextInput, Modal, FlatList, ScrollView, Alert } from 'react-native';
+import { obtainPlayers, searchPlayer, filterPlayersByPosition, filterPlayersByPrice, addFovoritePlayer } from './FirebaseFunctions';
 
 function SearchPlayers() {
 
@@ -154,7 +154,17 @@ function SearchPlayers() {
     .catch((error) => {
       Alert.alert(error.message);
     });
-  } 
+  }
+
+  const handleAddFavoritePlayer = (playerName, index) => {
+    addFovoritePlayer(playerName)
+    .then(() => {
+      toggleFavorite(index);
+    })
+    .catch((error) => {
+      Alert.alert(error.message);
+    });
+  }
 
   return (
     <View style = {styles.MainContainer}>
@@ -194,7 +204,7 @@ function SearchPlayers() {
             </View>
             <TouchableOpacity 
               style = {styles.FavoriteButton}
-              onPress={() => toggleFavorite(index)}>
+              onPress={() => handleAddFavoritePlayer(player.name, index)}>
               <MaterialIcons 
                 name={favoritePlayers[index] ? "favorite" : "favorite-outline"}  
                 size={24} 
