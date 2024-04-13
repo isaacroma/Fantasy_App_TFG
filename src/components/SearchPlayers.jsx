@@ -93,6 +93,10 @@ function SearchPlayers() {
   };
 
   const handleFilterPlayersByPosition = (position) => {
+    setPrice1ButtonPressed(false);
+    setPrice2ButtonPressed(false);
+    setPrice3ButtonPressed(false);
+    setPrice4ButtonPressed(false);
     if (position == 'POR') {
       setPORButtonPressed(true);
       setDFCButtonPressed(false);
@@ -125,6 +129,10 @@ function SearchPlayers() {
   }
 
   const handleFilterPlayersByPrice = (min, max) => {
+    setPORButtonPressed(false);
+    setDFCButtonPressed(false);
+    setMCButtonPressed(false);
+    setDCButtonPressed(false);
     if (min == 0 && max == 1000000) {
       setPrice1ButtonPressed(true);
       setPrice2ButtonPressed(false);
@@ -164,6 +172,19 @@ function SearchPlayers() {
     .catch((error) => {
       Alert.alert(error.message);
     });
+  }
+
+  const handleDeleteFilters = () => {
+    setPORButtonPressed(false);
+    setDFCButtonPressed(false);
+    setMCButtonPressed(false);
+    setDCButtonPressed(false);
+    setPrice1ButtonPressed(false);
+    setPrice2ButtonPressed(false);
+    setPrice3ButtonPressed(false);
+    setPrice4ButtonPressed(false);
+    setFilterButtonPressed(false);
+    setPlayers(allPlayers);
   }
 
   return (
@@ -269,6 +290,12 @@ function SearchPlayers() {
                   <Text style = {styles.Text}>+10M</Text>
                 </TouchableOpacity>
               </View>
+            </View>
+            <View style = {styles.DeleteFiltersContainer}>
+              <TouchableOpacity onPress={handleDeleteFilters}
+              style = {styles.DeleteFiltersButton}>
+                <Text>Borrar Filtros</Text>
+              </TouchableOpacity>
             </View>
           </View>
         </View>
@@ -547,6 +574,21 @@ const styles = StyleSheet.create({
     height: '80%',
     width: 50,
     backgroundColor: '#CDCDCD'
+  },
+  //Delete Filters
+  DeleteFiltersContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
+  },
+  DeleteFiltersButton: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#DD1919',
+    height: '30%',
+    width: 100,
+    borderRadius: 20,
+    borderWidth: 1
   }
 });
 

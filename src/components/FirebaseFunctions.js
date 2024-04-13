@@ -371,9 +371,7 @@ export const addFovoritePlayer = async (playerName) => {
       if (docSnapshot.exists()) {
         const data = docSnapshot.data();
         const members = data.members;
-        console.log(members);
         for (const member of members) {
-          console.log(member.userId);
           if (member.userId === user.uid) {
               const favoritePlayers = member.favoritePlayers;
               if (!favoritePlayers.includes(playerName)) {
