@@ -28,6 +28,7 @@ function SearchPlayers() {
   const [Price2ButtonPressed, setPrice2ButtonPressed] = useState(false);
   const [Price3ButtonPressed, setPrice3ButtonPressed] = useState(false);
   const [Price4ButtonPressed, setPrice4ButtonPressed] = useState(false);
+  
 
   //Functions
   useFocusEffect(

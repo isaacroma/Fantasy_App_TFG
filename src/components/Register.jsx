@@ -2,7 +2,7 @@ import React, {useState} from 'react'
 import {useNavigation} from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { StyleSheet, Text, View, TouchableOpacity, TextInput, Alert } from 'react-native';
-import { getFirebaseAuth, registerUser } from './FirebaseFunctions';
+import { getFirebaseAuth, createUser } from './FirebaseFunctions';
 
 
 function Register() {
@@ -17,13 +17,13 @@ function Register() {
 
   //Functions
   const handleRegister = () => {
-    registerUser(auth, username, email, password)
-      .then(() => {
-        navigation.navigate('Home');
-      })
-      .catch(error => {
-        Alert.alert(error.message);
-      });
+    createUser(auth, username, email, password)
+    .then(() => {
+      navigation.navigate('Home');
+    })
+    .catch(error => {
+      Alert.alert(error.message);
+    });
   }
 
   return (
