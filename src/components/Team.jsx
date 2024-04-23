@@ -1,6 +1,7 @@
-import React, {useState, useRef} from 'react'
+import React, {useState, useRef, useEffect} from 'react'
 import {useNavigation, useFocusEffect} from '@react-navigation/native';
 import { StyleSheet, Text, View, TouchableOpacity, TextInput, Modal, FlatList, Image, ScrollView } from 'react-native';
+import { getUserTeam } from './FirebaseFunctions';
 
 function Team() {
 
@@ -9,18 +10,8 @@ function Team() {
 
   //Variables
   const scrollViewRef = useRef(null);
-  const players = [
-    { name: 'Jugador 1', position: 'DC', price: 1000000, aligned: true },
-    { name: 'Jugador 2', position: 'DFC', price: 800000, aligned: true },
-    { name: 'Jugador 3', position: 'MC', price: 1200000, aligned: false },
-    { name: 'Jugador 4', position: 'POR', price: 600000, aligned: true },
-    { name: 'Jugador 5', position: 'DC', price: 1500000, aligned: false },
-    { name: 'Jugador 6', position: 'DFC', price: 700000, aligned: true },
-    { name: 'Jugador 7', position: 'MC', price: 1100000, aligned: true },
-    { name: 'Jugador 8', position: 'MC', price: 650000, aligned: false },
-    { name: 'Jugador 9', position: 'DFC', price: 1300000, aligned: false },
-    { name: 'Jugador 10', position: 'DC', price: 750000, aligned: true }
-  ];
+  const [players, setPlayers] = useState([]);
+  const [money, setMoney] = useState(null);
 
   //Functions
   useFocusEffect(
@@ -28,6 +19,21 @@ function Team() {
       scrollViewRef.current.scrollTo({ y: 0, animated: false });
     }, [])
   );
+
+  useEffect(() => {
+    handlegetUserInfo();
+  }, [])
+
+  const handlegetUserInfo = async () => {
+      getUserTeam()
+      .then((data) => {
+          setPlayers(data.team);
+          setMoney(data.money);
+      })
+      .catch(error => {
+          Alert.alert(error.message);
+      });
+  };
 
   const getPositionColor = (position) => {
     switch(position) {
@@ -44,7 +50,7 @@ function Team() {
     }
   }
 
-  const getAlignedColor = (aligned) => {
+  /* const getAlignedColor = (aligned) => {
     switch(aligned) {
       case true:
         return '#64EE51';
@@ -53,14 +59,14 @@ function Team() {
       default:
         return 'white';
     }
-  }
+  } */
 
   return (
     <View style = {styles.MainContainer}>
       <View style = {styles.HeaderContainer}>
         <Text style = {styles.PrincipalTitle}>Equipo</Text>
         <View style = {styles.MoneyContainer}>
-          <Text style = {styles.Text}>500.000</Text>
+          <Text style = {styles.Text}>{money}</Text>
         </View>
       </View>
       <ScrollView ref={scrollViewRef} style = {styles.ScrollView}>
@@ -73,16 +79,16 @@ function Team() {
         <View style = {styles.PlayersContainer}>
         {players.map((player, index) => {
           return (
-            <View style = {[styles.PlayerContainer, {backgroundColor: getAlignedColor(player.aligned)}]} key={index}>
+            <View style = {styles.PlayerContainer} key={index}>
             <View style = {styles.PlayerTeamPositionContainer}>
-              <Text>Barça</Text>
+              <Text>{player.team}</Text>
               <View style = {[styles.PlayePositionContainer, {backgroundColor: getPositionColor(player.position)}]}>
                 <Text style = {styles.PlayerPosition}>{player.position}</Text>
               </View>
             </View>
             <View style = {styles.PlayerNamePointsContainer}>
               <Text style = {styles.PlayerName}>{player.name}</Text>
-              <Text style = {styles.PlayerPoints}>105</Text>
+              <Text style = {styles.PlayerPoints}>{player.points}</Text>
             </View>
             <TouchableOpacity 
               style = {styles.SellButton}>

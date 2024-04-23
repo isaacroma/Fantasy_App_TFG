@@ -1,8 +1,9 @@
-import React, {useState, useRef} from 'react'
+import React, {useState, useRef, useEffect} from 'react'
 import {useNavigation, useFocusEffect} from '@react-navigation/native';
 import { Entypo } from '@expo/vector-icons';
 import { FontAwesome6 } from '@expo/vector-icons';
 import { StyleSheet, Text, View, TouchableOpacity, TextInput, Modal, FlatList, ScrollView } from 'react-native';
+import { getMarketPlayers } from './FirebaseFunctions';
 
 function Market() {
 
@@ -13,18 +14,7 @@ function Market() {
   const scrollViewRef = useRef(null);
   const [selectedPlayer, setSelectedPlayer] = useState(null);
   const [BuyButtonPressed, setBuyButtonPressed] = useState(false);
-  const players = [
-    { name: 'Jugador 1', position: 'DC', price: 1000000 },
-    { name: 'Jugador 2', position: 'DFC', price: 800000 },
-    { name: 'Jugador 3', position: 'MC', price: 1200000 },
-    { name: 'Jugador 4', position: 'POR', price: 600000 },
-    { name: 'Jugador 5', position: 'DC', price: 1500000 },
-    { name: 'Jugador 6', position: 'DFC', price: 700000 },
-    { name: 'Jugador 7', position: 'MC', price: 1100000 },
-    { name: 'Jugador 8', position: 'MC', price: 650000 },
-    { name: 'Jugador 9', position: 'DFC', price: 1300000 },
-    { name: 'Jugador 10', position: 'DC', price: 750000 }
-  ];
+  const [players, setPlayers] = useState([]);
 
   //Functions
   useFocusEffect(
@@ -32,6 +22,20 @@ function Market() {
       scrollViewRef.current.scrollTo({ y: 0, animated: false });
     }, [])
   );
+
+  useEffect(() => {
+    handlegetMarketPlayers();
+  }, [])
+
+  const handlegetMarketPlayers = async () => {
+      getMarketPlayers()
+      .then((data) => {
+          setPlayers(data);
+      })
+      .catch(error => {
+          Alert.alert(error.message);
+      });
+  };
   
   const handleBuyPlayer = (player) => {
     setSelectedPlayer(player);
@@ -69,14 +73,14 @@ function Market() {
           return (
             <View style = {styles.PlayerContainer} key={index}>
             <View style = {styles.PlayerTeamPositionContainer}>
-              <Text>Barça</Text>
+              <Text>{player.team}</Text>
               <View style = {[styles.PlayePositionContainer, {backgroundColor: getPositionColor(player.position)}]}>
                 <Text style = {styles.PlayerPosition}>{player.position}</Text>
               </View>
             </View>
             <View style = {styles.PlayerNamePointsContainer}>
               <Text style = {styles.PlayerName}>{player.name}</Text>
-              <Text style = {styles.PlayerPoints}>105</Text>
+              <Text style = {styles.PlayerPoints}>{player.points}</Text>
             </View>
             <TouchableOpacity 
               style = {styles.BuyButton}

@@ -14,6 +14,13 @@ let obtainPlayersFunction = null;
 let searchPlayerFunction = null;
 let filterPlayersByPositionFunction = null;
 let filterPlayersByPriceFunction = null;
+let obtainAllLeaguesFunction = null;
+let searchLeagueFunction = null;
+let joinLeagueFunction = null;
+let addFavoritePlayerFunction = null;
+let getGeneralClassificationFunction = null;
+let getMarketPlayersFunction = null;
+let getUserTeamFunction = null;
 
 //Inicializa la app de Firebase
 export const initializeFirebase = () => {
@@ -24,6 +31,12 @@ export const initializeFirebase = () => {
   searchPlayerFunction = httpsCallable(getFunctions(app), 'searchPlayer');
   filterPlayersByPositionFunction = httpsCallable(getFunctions(app), 'filterPlayersByPosition');
   filterPlayersByPriceFunction = httpsCallable(getFunctions(app), 'filterPlayersByPrice');
+  obtainAllLeaguesFunction = httpsCallable(getFunctions(app), 'obtainAllLeagues');
+  joinLeagueFunction = httpsCallable(getFunctions(app), 'joinLeague');
+  addFavoritePlayerFunction = httpsCallable(getFunctions(app), 'addFavoritePlayer');
+  getGeneralClassificationFunction = httpsCallable(getFunctions(app), 'getGeneralClassification');
+  getMarketPlayersFunction = httpsCallable(getFunctions(app), 'getMarketPlayers');
+  getUserTeamFunction = httpsCallable(getFunctions(app), 'getUserTeam');
   return app;
 };
 
@@ -106,57 +119,28 @@ export const createLeague = async (leagueName) => {
 
 //Función que devuelve la Liga con el nombre especificado
 export const searchLeague = async (leagueName) => {
-  try {
-    // Crea una consulta para buscar documentos en la colección "Leagues" con el nombre proporcionado
-    const db = getFirestore(app);
-    const leaguesCollection = collection(db, 'Leagues');
-    const leagueQuery = query(leaguesCollection, where('name', '>=', leagueName), where('name', '<', leagueName + '\uf8ff'));
-
-    // Ejecuta la consulta
-    const querySnapshot = await getDocs(leagueQuery);
-
-    const leagueData = [];
-    // Itera sobre los resultados de la consulta
-    querySnapshot.forEach((doc) => {
-      // Accede a los datos del documento
-      const data = doc.data();
-      leagueData.push(data);
-    });
-
-    // Devuelve los datos de las ligas encontradas
-    return leagueData;
-    
-  } catch (error) {
-      console.error('Error al buscar una liga:', error);
-      return false; 
-  }
+  return searchLeagueFunction({leagueName: leagueName})
+  .then((result) => {
+    const leagues = result.data.leaguesData;
+    return leagues;
+  })
+  .catch((error) => {
+    console.log('Error: ' + error);
+    console.log('Error message: ' + error.message);
+  })
 };
 
 //Función que devuelve todas las ligas
 export const searchAllLeagues = async () => {
-  
-  try {
-    const db = getFirestore(app);
-    const leaguesCollection = collection(db, 'Leagues');
-
-    //Devuelve todas las ligas
-    const querySnapshot = await getDocs(leaguesCollection);
-
-    const leagueData = [];
-    // Itera sobre los resultados de la consulta
-    querySnapshot.forEach((doc) => {
-      // Accede a los datos del documento
-      const data = doc.data();
-      leagueData.push(data);
-    });
-
-    // Devuelve los datos de las ligas encontradas
-    return leagueData;
-
-  } catch (error) {
-      console.error('Error al buscar todas las ligas:', error);
-      return false; 
-  }
+  return obtainAllLeaguesFunction()
+  .then((result) => {
+    const leagues = result.data.leaguesData;
+    return leagues;
+  })
+  .catch((error) => {
+    console.log('Error: ' + error);
+    console.log('Error message: ' + error.message);
+  })
 };
 
 //Funcion para comprobar si hay un usuario logueado
@@ -172,50 +156,14 @@ export const checkloggedUser = async () => {
 
 ///Función para crear un documento en la colección "Leagues" asociada al usuario logueado
 export const joinLeague = async (leagueName) => {
-  try {
-      const auth = getAuth(app);
-      const user = auth.currentUser;
-  
-      const db = getFirestore(app);
-      const leaguesCollection = collection(db, 'Leagues');
-
-      const leagueQuery = query(leaguesCollection, where('name', '==', leagueName));
-      const querySnapshot = await getDocs(leagueQuery);
-          
-      // Verifica si se encontraron documentos
-    if (!querySnapshot.empty) {
-      // Obtiene la referencia del primer documento encontrado
-      const leagueDocRef = doc(db, 'Leagues', querySnapshot.docs[0].id);
-
-      // Verifica si el usuario ya es miembro de la liga
-      const leagueData = querySnapshot.docs[0].data();
-      const isMember = leagueData.members.some(member => member.email === user.email);
-
-      if (isMember) {
-        Alert.alert('El usuario ya es miembro de esta liga');
-        return false;
-      }
-
-      // Actualiza el documento para añadir al nuevo miembro al array "members"
-      await updateDoc(leagueDocRef, {
-        members: arrayUnion({userId: user.uid, points: 0, favoritePlayers: []})
-      });
-
-      
-      const userDocRef = doc(db, 'Users', user.uid);            
-
-      await updateDoc(userDocRef, {
-        league: querySnapshot.docs[0].id
-      });
-
-      console.log('Usuario se ha unido a la liga');
-      return true;
-    }
-        
-  } catch (error) {
-      console.error('Error al unirse a una liga:', error);
-      return false; 
-  }
+  return joinLeagueFunction({leagueName: leagueName})
+  .then((result) => {
+    return result;
+  })
+  .catch((error) => {
+    console.log('Error: ' + error);
+    console.log('Error message: ' + error.message);
+  })
 };
 
 //Función que devuelve todos los jugadores
@@ -269,40 +217,55 @@ export const filterPlayersByPrice = async (min, max) => {
   })
 }
 
-//Función para registrar un nuevo usuario
+//Función para añadir un jugador a favoritos
 export const addFovoritePlayer = async (playerName) => {
-  try {
-    const auth = getAuth(app);
-    const user = auth.currentUser;
-    const db = getFirestore(app);
-    const userDocRef = doc(db, 'Users', user.uid);
-
-    const userDocSnap = await getDoc(userDocRef);
-    if (userDocSnap.exists()) {
-      const userData = userDocSnap.data();
-
-      const leagueDocRef = doc(db, 'Leagues', userData.league);
-      const docSnapshot = await getDoc(leagueDocRef);
-      if (docSnapshot.exists()) {
-        const data = docSnapshot.data();
-        const members = data.members;
-        for (const member of members) {
-          if (member.userId === user.uid) {
-              const favoritePlayers = member.favoritePlayers;
-              if (!favoritePlayers.includes(playerName)) {
-                  member.favoritePlayers = [...favoritePlayers, playerName];
-                  break;
-              }
-          }
-        }
-        await updateDoc(leagueDocRef, { members: members });
-
-        return true;
-      }
-    } 
-  } catch (error) {
-    console.error('Error al añadir un jugador a favoritos:', error);
-    return false; 
-  }
+  return addFavoritePlayerFunction({playerName: playerName})
+  .then((result) => {
+    return result;
+  })
+  .catch((error) => {
+    console.log('Error: ' + error);
+    console.log('Error message: ' + error.message);
+  })
 };
+
+export const getGeneralClassification = async() => {
+  return getGeneralClassificationFunction()
+  .then((result) => {
+    const members = result.data.members;
+    return members;
+  })
+  .catch((error) => {
+    console.log('Error: ' + error);
+    console.log('Error message: ' + error.message);
+  })
+}
+
+export const getMarketPlayers = async() => {
+  return getMarketPlayersFunction()
+  .then((result) => {
+    const marketPlayers = result.data.marketPlayers;
+    return marketPlayers;
+  })
+  .catch((error) => {
+    console.log('Error: ' + error);
+    console.log('Error message: ' + error.message);
+  })
+}
+
+export const getUserTeam = async() => {
+  return getUserTeamFunction()
+  .then((result) => {
+    const user = result.data.member;
+    return user;
+  })
+  .catch((error) => {
+    console.log('Error: ' + error);
+    console.log('Error message: ' + error.message);
+  })
+}
+
+
+
+
 

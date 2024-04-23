@@ -1,7 +1,8 @@
-import React, {useState, useRef} from 'react'
+import React, {useState, useRef, useEffect} from 'react'
 import {useNavigation, useFocusEffect} from '@react-navigation/native';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { StyleSheet, Text, View, TouchableOpacity, TextInput, Modal, FlatList, ScrollView } from 'react-native';
+import { getGeneralClassification } from './FirebaseFunctions';
 
 function Clasification() {
 
@@ -12,33 +13,37 @@ function Clasification() {
     const scrollViewRef = useRef(null);
     const [isGeneralButtonActive, setisGeneralButtonActive] = useState(true);
     const [isJourneyButtonActive, setisJourneyButtonActive] = useState(false);
-    const users = [
-        { name: 'Usuario 1', points: 1250},
-        { name: 'Usuario 2', points: 1200},
-        { name: 'Usuario 3', points: 1190},
-        { name: 'Usuario 4', points: 1000},
-        { name: 'Usuario 5', points: 850},
-        { name: 'Usuario 6', points: 849},
-        { name: 'Usuario 7', points: 600},
-        { name: 'Usuario 8', points: 550},
-        { name: 'Usuario 9', points: 520},
-        { name: 'Usuario 10', points: 500}
-    ];
+    const [users, setUsers] = useState([]);
     //Functions
     useFocusEffect(
         React.useCallback(() => {
           scrollViewRef.current.scrollTo({ y: 0, animated: false });
         }, [])
     );
+
+    useEffect(() => {
+        handlegetGeneralClassification();
+    }, [])
+
+    const handlegetGeneralClassification = async () => {
+        getGeneralClassification()
+        .then((data) => {
+            setUsers(data);
+        })
+        .catch(error => {
+            Alert.alert(error.message);
+        });
+    };
+
     const handlePressGeneralButton = () => {
         setisGeneralButtonActive(true);
         setisJourneyButtonActive(false);
-      };
+    };
     
-      const handlePressJourneyButton = () => {
+    const handlePressJourneyButton = () => {
         setisGeneralButtonActive(false);
         setisJourneyButtonActive(true);
-      };
+    };
 
     return (
         <View style = {styles.MainContainer}>
@@ -67,7 +72,7 @@ function Clasification() {
                 {users.map((user, index) => {
                     return (
                     <View style = {styles.UserContainer} key={index}>
-                        <Text style = {styles.UserName}>{user.name}</Text>
+                        <Text style = {styles.UserName}>{user.username}</Text>
                         <View style = {styles.UserPointsContainer}>
                             <Text style = {styles.UserPoints}>{user.points}</Text>
                         </View>
