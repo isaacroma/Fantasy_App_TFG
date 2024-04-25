@@ -215,7 +215,7 @@ function SearchPlayers() {
           return (
             <View style = {styles.PlayerContainer} key={index}>
             <View style = {styles.PlayerTeamPositionContainer}>
-              <Text>Barça</Text>
+              <Text style = {styles.PlayerTeam}>{player.team}</Text>
               <View style = {[styles.PlayePositionContainer, {backgroundColor: getPositionColor(player.position)}]}>
                 <Text style = {styles.PlayerPosition}>{player.position}</Text>
               </View>
@@ -417,6 +417,11 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     fontSize: 40,
     fontWeight: 'bold',
+  },
+  PlayerTeam: {
+    fontWeight: 'bold',
+    width: 80,
+    textAlign: 'center'
   },
   PlayerName: {
     fontWeight: 'bold',
