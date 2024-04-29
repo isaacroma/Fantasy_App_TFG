@@ -2,7 +2,7 @@ import React, {useState, useRef, useEffect} from 'react'
 import {useNavigation, useFocusEffect} from '@react-navigation/native';
 import { Entypo } from '@expo/vector-icons';
 import { FontAwesome6 } from '@expo/vector-icons';
-import { StyleSheet, Text, View, TouchableOpacity, TextInput, Modal, FlatList, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, TextInput, Modal, FlatList, ScrollView, Alert } from 'react-native';
 import { getMarketPlayers } from './FirebaseFunctions';
 
 function Market() {
@@ -73,7 +73,7 @@ function Market() {
           return (
             <View style = {styles.PlayerContainer} key={index}>
             <View style = {styles.PlayerTeamPositionContainer}>
-              <Text>{player.team}</Text>
+              <Text style = {styles.PlayerTeam}>{player.team}</Text>
               <View style = {[styles.PlayePositionContainer, {backgroundColor: getPositionColor(player.position)}]}>
                 <Text style = {styles.PlayerPosition}>{player.position}</Text>
               </View>
@@ -162,6 +162,11 @@ const styles = StyleSheet.create({
     width: '15%',
     height: 50,
     right: 40
+  },
+  PlayerTeam: {
+    fontWeight: 'bold',
+    width: 80,
+    textAlign: 'center'
   },
   PlayePositionContainer: {
     alignItems: 'center',
