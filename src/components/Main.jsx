@@ -1,13 +1,45 @@
-import React from 'react'
-import {useNavigation} from '@react-navigation/native'
+import React, {useState, useCallback} from 'react'
+import {useNavigation, useFocusEffect} from '@react-navigation/native'
 import { Ionicons } from '@expo/vector-icons';
-import { StyleSheet, Text, View, TouchableOpacity, TextInput, Image } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, TextInput, Alert } from 'react-native';
+import { initializeFirebase, getFirebaseAuth, loginUser, getUserLeague } from './FirebaseFunctions';
 
-const logoImg = require('../../assets/LogoApp.png')
 
 function Main() {
 
+  //Variables
   const navigation = useNavigation();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const app = initializeFirebase();
+  const auth = getFirebaseAuth();
+
+  //Functions
+  useFocusEffect(
+    useCallback(() => {
+      // Restablecer los valores de los email y password cuando la pantalla se enfoca
+      setEmail("");
+      setPassword("");
+    }, [])
+  );
+
+  const handleLogin = () => {
+    loginUser(auth, email, password)
+    .then(() => {
+      getUserLeague()
+      .then((data) => {
+        if (data == '0') {
+          navigation.navigate('CreateLeague');
+        } else if (data == '1') {
+          navigation.navigate('BottomTab');
+        }
+      })
+    })
+    .catch(error => {
+      Alert.alert(error.message);
+    });
+  }
 
   return (
     <View style = {styles.MainContainer}>
@@ -22,14 +54,18 @@ function Main() {
       <View style = {styles.InputsContainer}>
         <TextInput
           style = {styles.Input}
-          placeholder={'Nombre de usuario'}>
+          onChangeText={setEmail}
+          placeholder={'Email'}
+          value = {email}>
         </TextInput>
         <TextInput
           style = {styles.Input}
-          placeholder={'Contraseña'}>
+          onChangeText={setPassword}
+          placeholder={'Contraseña'}
+          value = {password}>
         </TextInput>
         <TouchableOpacity 
-        onPress={() => navigation.navigate('CreateLeague')}
+        onPress={handleLogin}
         style = {styles.LoginButton}>
           <Text style = {styles.LoginText}>Iniciar sesión</Text>
         </TouchableOpacity>
