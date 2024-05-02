@@ -21,6 +21,8 @@ let addFavoritePlayerFunction = null;
 let getGeneralClassificationFunction = null;
 let getMarketPlayersFunction = null;
 let getUserTeamFunction = null;
+let placeBidFunction = null;
+let updateMarketFunction = null;
 
 //Inicializa la app de Firebase
 export const initializeFirebase = () => {
@@ -37,6 +39,8 @@ export const initializeFirebase = () => {
   getGeneralClassificationFunction = httpsCallable(getFunctions(app), 'getGeneralClassification');
   getMarketPlayersFunction = httpsCallable(getFunctions(app), 'getMarketPlayers');
   getUserTeamFunction = httpsCallable(getFunctions(app), 'getUserTeam');
+  placeBidFunction = httpsCallable(getFunctions(app), 'placeBid');
+  updateMarketFunction = httpsCallable(getFunctions(app), 'updateMarketPlayers');
   return app;
 };
 
@@ -265,6 +269,27 @@ export const getUserTeam = async() => {
   })
 }
 
+export const placeBid = async (playerName, bid) => {
+  return placeBidFunction({playerName: playerName, bid: bid})
+  .then((result) => {
+    return result;
+  })
+  .catch((error) => {
+    console.log('Error: ' + error);
+    console.log('Error message: ' + error.message);
+  })
+}
+
+export const updateMarketPlayers = async () => {
+  return updateMarketFunction()
+  .then((result) => {
+    return result;
+  })
+  .catch((error) => {
+    console.log('Error: ' + error);
+    console.log('Error message: ' + error.message);
+  })
+}
 
 
 

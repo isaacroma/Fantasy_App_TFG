@@ -3,7 +3,7 @@ import {useNavigation, useFocusEffect} from '@react-navigation/native';
 import { Entypo } from '@expo/vector-icons';
 import { FontAwesome6 } from '@expo/vector-icons';
 import { StyleSheet, Text, View, TouchableOpacity, TextInput, Modal, FlatList, ScrollView, Alert } from 'react-native';
-import { getMarketPlayers } from './FirebaseFunctions';
+import { getMarketPlayers, placeBid, updateMarketPlayers } from './FirebaseFunctions';
 
 function Market() {
 
@@ -13,6 +13,7 @@ function Market() {
   //Variables
   const scrollViewRef = useRef(null);
   const [selectedPlayer, setSelectedPlayer] = useState(null);
+  const [actualBid, setActualBid] = useState(null);
   const [BuyButtonPressed, setBuyButtonPressed] = useState(false);
   const [players, setPlayers] = useState([]);
 
@@ -36,6 +37,32 @@ function Market() {
           Alert.alert(error.message);
       });
   };
+
+  const handleUpdateMarket = async () => {
+    updateMarketPlayers()
+    .then((data) => {
+        handlegetMarketPlayers();
+    })
+    .catch(error => {
+        Alert.alert(error.message);
+    });
+  };
+
+  const handlePlaceBid = async (playerName, bid) => {
+    if (bid === null || parseInt(bid, 10) < selectedPlayer.price) {
+      Alert.alert("No puedes pujar menos de lo que vale el jugador");
+    } else {
+      placeBid(playerName, parseInt(bid, 10))
+      .then((data) => {
+        setBuyButtonPressed(false);
+        setActualBid(null);
+        Alert.alert("Puja realizada");
+      })
+      .catch(error => {
+        Alert.alert(error.message);
+      });
+    }
+  }
   
   const handleBuyPlayer = (player) => {
     setSelectedPlayer(player);
@@ -68,6 +95,9 @@ function Market() {
           style = {styles.MoneyIcon}
         />
       </View>
+      <TouchableOpacity onPress={() => handleUpdateMarket()}>
+        <Text>Actualizar Mercado</Text>
+      </TouchableOpacity>
       <ScrollView ref={scrollViewRef} style = {styles.ScrollView}>
         {players.map((player, index) => {
           return (
@@ -107,10 +137,13 @@ function Market() {
             <View style = {styles.PriceCointainer}>
               <TextInput
                 style = {styles.PriceInput}
+                onChangeText={setActualBid}
                 keyboardType='numeric'
-                placeholder={selectedPlayer ? selectedPlayer.price.toString() : ''}>
+                placeholder={selectedPlayer ? selectedPlayer.price.toString() : ''}
+                value = {actualBid}>
               </TextInput>
-              <TouchableOpacity style = {styles.ModalBuyButton}>
+              <TouchableOpacity onPress={() => handlePlaceBid(selectedPlayer.name, actualBid)}
+              style = {styles.ModalBuyButton}>
                 <Text style = {styles.ModalBuyButtonText}>Pujar</Text>
               </TouchableOpacity>
             </View>
