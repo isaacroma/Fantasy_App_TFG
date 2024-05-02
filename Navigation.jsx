@@ -12,10 +12,12 @@ import Main from './src/components/Main.jsx';
 import Register from './src/components/Register.jsx';
 import CreateLeague from './src/components/CreateLeague.jsx';
 import Team from './src/components/Team.jsx';
+
 import Configuration from './src/components/Configuration.jsx';
 import Market from './src/components/Market.jsx';
 import SearchPlayers from './src/components/SearchPlayers.jsx';
 import Clasification from './src/components/Clasification.jsx';
+
 
 const HomeStackNavigator = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
