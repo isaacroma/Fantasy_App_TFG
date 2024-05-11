@@ -1,5 +1,4 @@
 import React from 'react';
-import { Alert } from 'react-native';
 import { initializeApp } from 'firebase/app';
 import { getFirestore, collection, addDoc, setDoc, getDoc, query, where, getDocs, updateDoc, doc, arrayUnion } from 'firebase/firestore';
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile } from 'firebase/auth';
@@ -290,6 +289,22 @@ export const updateMarketPlayers = async () => {
     console.log('Error message: ' + error.message);
   })
 }
+
+export const addPlayersToFirestore = async (players) => {
+  try {
+    const db = getFirestore(app);
+    const playersCollection = collection(db, 'Players');
+
+    for (const player of players) {
+      await addDoc(playersCollection, player);
+    }
+    return true;
+  } catch (error) {
+      console.log('Error: ' + error);
+      console.log('Error message: ' + error.message);
+      return false;
+  }
+};
 
 
 

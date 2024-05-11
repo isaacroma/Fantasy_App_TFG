@@ -41,6 +41,7 @@ function Market() {
   const handleUpdateMarket = async () => {
     updateMarketPlayers()
     .then((data) => {
+      console.log(data);
         handlegetMarketPlayers();
     })
     .catch(error => {

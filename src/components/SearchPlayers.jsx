@@ -13,7 +13,6 @@ function SearchPlayers() {
 
   //Variables
   const scrollViewRef = useRef(null);
-  //const [selectedPlayer, setSelectedPlayer] = useState(null);
   const [FilterButtonPresses, setFilterButtonPressed] = useState(false);
   const [favoritePlayers, setFavoritePlayers] = useState([]);
   const [players, setPlayers] = useState([]);
@@ -28,7 +27,6 @@ function SearchPlayers() {
   const [Price2ButtonPressed, setPrice2ButtonPressed] = useState(false);
   const [Price3ButtonPressed, setPrice3ButtonPressed] = useState(false);
   const [Price4ButtonPressed, setPrice4ButtonPressed] = useState(false);
-  
 
   //Functions
   useFocusEffect(
@@ -213,27 +211,28 @@ function SearchPlayers() {
       <ScrollView ref={scrollViewRef} style = {styles.ScrollView}>
         {players.map((player, index) => {
           return (
-            <View style = {styles.PlayerContainer} key={index}>
-            <View style = {styles.PlayerTeamPositionContainer}>
-              <Text style = {styles.PlayerTeam}>{player.team}</Text>
-              <View style = {[styles.PlayePositionContainer, {backgroundColor: getPositionColor(player.position)}]}>
-                <Text style = {styles.PlayerPosition}>{player.position}</Text>
+            <TouchableOpacity onPress={() => navigation.navigate('Player', { player: player })}
+            style = {styles.PlayerContainer} key={index}>
+              <View style = {styles.PlayerTeamPositionContainer}>
+                <Text style = {styles.PlayerTeam}>{player.team}</Text>
+                <View style = {[styles.PlayePositionContainer, {backgroundColor: getPositionColor(player.position)}]}>
+                  <Text style = {styles.PlayerPosition}>{player.position}</Text>
+                </View>
               </View>
-            </View>
-            <View style = {styles.PlayerNamePointsContainer}>
-              <Text style = {styles.PlayerName}>{player.name}</Text>
-              <Text style = {styles.PlayerPoints}>{player.points}</Text>
-            </View>
-            <TouchableOpacity 
-              style = {styles.FavoriteButton}
-              onPress={() => handleAddFavoritePlayer(player.name, index)}>
-              <MaterialIcons 
-                name={favoritePlayers[index] ? "favorite" : "favorite-outline"}  
-                size={24} 
-                color="black" 
-              />
+              <View style = {styles.PlayerNamePointsContainer}>
+                <Text style = {styles.PlayerName}>{player.name}</Text>
+                <Text style = {styles.PlayerPoints}>{player.points}</Text>
+              </View>
+              <TouchableOpacity 
+                style = {styles.FavoriteButton}
+                onPress={() => handleAddFavoritePlayer(player.name, index)}>
+                <MaterialIcons 
+                  name={favoritePlayers[index] ? "favorite" : "favorite-outline"}  
+                  size={24} 
+                  color="black" 
+                />
+              </TouchableOpacity>
             </TouchableOpacity>
-          </View>
           );
         })}
       </ScrollView>
