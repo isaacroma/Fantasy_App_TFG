@@ -22,6 +22,7 @@ let getMarketPlayersFunction = null;
 let getUserTeamFunction = null;
 let placeBidFunction = null;
 let updateMarketFunction = null;
+let sellPlayerFunction = null;
 
 //Inicializa la app de Firebase
 export const initializeFirebase = () => {
@@ -40,6 +41,7 @@ export const initializeFirebase = () => {
   getUserTeamFunction = httpsCallable(getFunctions(app), 'getUserTeam');
   placeBidFunction = httpsCallable(getFunctions(app), 'placeBid');
   updateMarketFunction = httpsCallable(getFunctions(app), 'updateMarketPlayers');
+  sellPlayerFunction = httpsCallable(getFunctions(app), 'sellPlayer');
   return app;
 };
 
@@ -268,8 +270,8 @@ export const getUserTeam = async() => {
   })
 }
 
-export const placeBid = async (playerName, bid) => {
-  return placeBidFunction({playerName: playerName, bid: bid})
+export const placeBid = async (playerName, bid, date) => {
+  return placeBidFunction({playerName: playerName, bid: bid, date: date})
   .then((result) => {
     return result;
   })
@@ -305,6 +307,18 @@ export const addPlayersToFirestore = async (players) => {
       return false;
   }
 };
+
+//Función para vender un jugador
+export const sellPlayer = async (playerName, price) => {
+  return sellPlayerFunction({playerName: playerName, price: price})
+  .then((result) => {
+    return result;
+  })
+  .catch((error) => {
+    console.log('Error: ' + error);
+    console.log('Error message: ' + error.message);
+  })
+}
 
 
 

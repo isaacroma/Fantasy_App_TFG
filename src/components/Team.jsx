@@ -1,7 +1,8 @@
 import React, {useState, useRef, useEffect} from 'react'
 import {useNavigation, useFocusEffect} from '@react-navigation/native';
+import { Entypo } from '@expo/vector-icons';
 import { StyleSheet, Text, View, TouchableOpacity, TextInput, Modal, FlatList, Image, ScrollView, Alert } from 'react-native';
-import { getUserTeam } from './FirebaseFunctions';
+import { getUserTeam, sellPlayer } from './FirebaseFunctions';
 
 function Team() {
 
@@ -12,6 +13,8 @@ function Team() {
   const scrollViewRef = useRef(null);
   const [players, setPlayers] = useState([]);
   const [money, setMoney] = useState(null);
+  const [selectedPlayer, setSelectedPlayer] = useState(null);
+  const [SellButtonPressed, setSellButtonPressed] = useState(false);
 
   //Functions
   useFocusEffect(
@@ -33,6 +36,22 @@ function Team() {
       .catch(error => {
           Alert.alert(error.message);
       });
+  };
+
+  const handleSellPlayer = async (playerName, price) => {
+    sellPlayer(playerName, price)
+    .then(() => {
+      setSellButtonPressed(false);
+      Alert.alert("Jugador vendido!");
+    })
+    .catch(error => {
+        Alert.alert(error.message);
+    });
+  };
+
+  const handleOpenSellModal = (player) => {
+    setSelectedPlayer(player);
+    setSellButtonPressed(true);
   };
 
   const getPositionColor = (position) => {
@@ -90,7 +109,7 @@ function Team() {
               <Text style = {styles.PlayerName}>{player.name}</Text>
               <Text style = {styles.PlayerPoints}>{player.points}</Text>
             </View>
-            <TouchableOpacity 
+            <TouchableOpacity onPress={() => handleOpenSellModal(player)}
               style = {styles.SellButton}>
                 <Text style = {styles.PlayerPrice}>Vender</Text>
             </TouchableOpacity>
@@ -99,6 +118,29 @@ function Team() {
         })}
         </View>
       </ScrollView>
+
+      <Modal
+        animationType="slide"
+        transparent
+        visible={SellButtonPressed}>
+        <View style={styles.ModalBackground}>
+          <View style = {styles.ModalContainer}>
+            <View style={styles.CloseContainer}>
+              <TouchableOpacity onPress={() => setSellButtonPressed(false)}>
+                <Entypo name="cross" size={24} color="black" />
+              </TouchableOpacity>
+            </View>
+            <Text style = {styles.ModalText}>¿Seguro que quieres vender este jugador?</Text>
+            <Text style = {styles.PriceText}>Precio: {selectedPlayer.price}</Text>
+            <View style = {styles.PriceCointainer}>
+              <TouchableOpacity onPress={() => handleSellPlayer(selectedPlayer.name, selectedPlayer.price)}
+              style = {styles.ModalSellButton}>
+                <Text style = {styles.ModalSellButtonText}>Vender</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -221,11 +263,85 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     width: 100,
     height: 40,
-    backgroundColor: '#A9A9A9',
+    backgroundColor: '#FF3838',
     borderRadius: 30,
     borderWidth: 1,
     left: 30,
     elevation: 5
+  },
+
+  //Modal
+  ModalBackground: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  }, 
+  ModalContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'white',
+    position: 'absolute',
+    borderRadius: 10,
+    padding: 10,
+    borderWidth: 3,
+    borderColor: 'black',
+    width: 300,
+    height: 400,
+    top: 125,
+    right: 45
+  },
+  CloseContainer: {
+    alignItems: 'center',
+    position: 'absolute',
+    width: 25,
+    height: 25,
+    top: 5,
+    right: 10
+  },
+  PriceCointainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: '25%',
+    width: '90%',
+  },
+  PriceInput: {
+    height: '50%',
+    width: '90%',
+    borderWidth: 2,
+    borderRadius: 15,
+    paddingLeft: 7,
+    paddingRight: 7,
+    textAlign: 'center',
+    fontSize: 30,
+  },
+  ModalSellButton: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: '40%',
+    width: '50%',
+    backgroundColor: '#FF3838',
+    borderRadius: 20,
+    borderWidth: 1,
+    marginTop: 10,
+    elevation: 20
+  },
+  ModalSellButtonText: {
+    fontWeight: 'bold',
+    fontSize: 15,
+  },
+  ModalText: {
+    textAlign: 'center',
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    color: 'rgba(0, 0, 0, 0.5)'
+  },
+  PriceText: {
+    textAlign: 'center',
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 20,
   },
 });
 

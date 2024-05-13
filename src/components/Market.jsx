@@ -50,10 +50,11 @@ function Market() {
   };
 
   const handlePlaceBid = async (playerName, bid) => {
+    const date = new Date();
     if (bid === null || parseInt(bid, 10) < selectedPlayer.price) {
       Alert.alert("No puedes pujar menos de lo que vale el jugador");
     } else {
-      placeBid(playerName, parseInt(bid, 10))
+      placeBid(playerName, parseInt(bid, 10), date)
       .then((data) => {
         setBuyButtonPressed(false);
         setActualBid(null);
@@ -272,7 +273,7 @@ const styles = StyleSheet.create({
     borderColor: 'black',
     width: 300,
     height: 400,
-    top: 70,
+    top: 125,
     right: 45
   },
   CloseContainer: {
