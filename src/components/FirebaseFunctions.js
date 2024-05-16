@@ -23,6 +23,7 @@ let getUserTeamFunction = null;
 let placeBidFunction = null;
 let updateMarketFunction = null;
 let sellPlayerFunction = null;
+let alignPlayerFunction = null;
 
 //Inicializa la app de Firebase
 export const initializeFirebase = () => {
@@ -42,6 +43,7 @@ export const initializeFirebase = () => {
   placeBidFunction = httpsCallable(getFunctions(app), 'placeBid');
   updateMarketFunction = httpsCallable(getFunctions(app), 'updateMarketPlayers');
   sellPlayerFunction = httpsCallable(getFunctions(app), 'sellPlayer');
+  alignPlayerFunction = httpsCallable(getFunctions(app), 'alignPlayer');
   return app;
 };
 
@@ -319,6 +321,17 @@ export const sellPlayer = async (playerName, price) => {
     console.log('Error message: ' + error.message);
   })
 }
+
+export const alignPlayer = async (actualPlayer, newPlayer) => {
+  return alignPlayerFunction({actualPlayer: actualPlayer, newPlayer: newPlayer})
+  .then((result) => {
+    return result;
+  })
+  .catch((error) => {
+    console.log('Error: ' + error);
+    console.log('Error message: ' + error.message);
+  })
+};
 
 
 

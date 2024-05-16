@@ -17,13 +17,6 @@ function Player() {
   const [Season2223ButtonPressed, setSeason2223ButtonPressed] = useState(false);
   const [Season2122ButtonPressed, setSeason2122ButtonPressed] = useState(false);
   const [Season2021ButtonPressed, setSeason2021ButtonPressed] = useState(false);
-  /* const player = {
-    name: 'Ter Stegen', position: 'POR', points: 71, price: 12000000, team: 'Barça', 
-    seasons: {"2324": {points: 71, againstGoals: 15, zeroGoals: 8, goals: 0, asists: 0, yellowCards: 1, redCards: 0, matches: 17},
-    "2223": {points: 216, againstGoals: 39, zeroGoals: 28, goals: 0, asists: 0, yellowCards: 0, redCards: 0, matches: 50},
-    "2122": {points: 137, againstGoals: 57, zeroGoals: 15, goals: 0, asists: 0, yellowCards: 3, redCards: 0, matches: 49},
-    "2021": {points: 131, againstGoals: 50, zeroGoals: 14 ,goals: 0, asists: 0, yellowCards: 1, redCards: 0, matches: 42}}
-  }; */
   const [SeasonInfo, setSesonInfo] = useState(player.seasons["2324"]);
   const ImageUrl = player.team === "Madrid" ? require("../../assets/Madrid.png") :
                     player.team === "Atlético de Madrid" ? require("../../assets/Atletico_de_Madrid.png") :
