@@ -3,7 +3,7 @@ import {useNavigation, useFocusEffect} from '@react-navigation/native';
 import { Entypo } from '@expo/vector-icons';
 import { FontAwesome6 } from '@expo/vector-icons';
 import { StyleSheet, Text, View, TouchableOpacity, TextInput, Modal, FlatList, ScrollView, Alert } from 'react-native';
-import { getMarketPlayers, placeBid, updateMarketPlayers } from './FirebaseFunctions';
+import { getMarketPlayers, placeBid, updateMarketPlayers, getPlayerBids, deletePlayerBid } from './FirebaseFunctions';
 
 function Market() {
 
@@ -14,7 +14,9 @@ function Market() {
   const scrollViewRef = useRef(null);
   const [selectedPlayer, setSelectedPlayer] = useState(null);
   const [actualBid, setActualBid] = useState(null);
+  const [bids, setBids] = useState([]);
   const [BuyButtonPressed, setBuyButtonPressed] = useState(false);
+  const [SellButtonPressed, setSellButtonPressed] = useState(false);
   const [players, setPlayers] = useState([]);
 
   //Functions
@@ -26,23 +28,33 @@ function Market() {
 
   useEffect(() => {
     handlegetMarketPlayers();
+    handlegetPlayerBids();
   }, [])
 
   const handlegetMarketPlayers = async () => {
       getMarketPlayers()
       .then((data) => {
-          setPlayers(data);
+        setPlayers(data);
       })
       .catch(error => {
           Alert.alert(error.message);
       });
   };
 
+  const handlegetPlayerBids = async () => {
+    getPlayerBids()
+    .then((data) => {
+      setBids(data);
+    })
+    .catch(error => {
+        Alert.alert(error.message);
+    });
+};
+
   const handleUpdateMarket = async () => {
     updateMarketPlayers()
     .then((data) => {
-      console.log(data);
-        handlegetMarketPlayers();
+      handlegetMarketPlayers();
     })
     .catch(error => {
         Alert.alert(error.message);
@@ -58,6 +70,7 @@ function Market() {
       .then((data) => {
         setBuyButtonPressed(false);
         setActualBid(null);
+        handlegetPlayerBids();
         Alert.alert("Puja realizada");
       })
       .catch(error => {
@@ -65,10 +78,26 @@ function Market() {
       });
     }
   }
+
+  const handleDeleteBid = async (playerName) => {
+    deletePlayerBid(playerName)
+    .then((data) => {
+      setSellButtonPressed(false);
+      handlegetPlayerBids();
+      Alert.alert("Puja retirada");
+    })
+    .catch(error => {
+      Alert.alert(error.message);
+    });
+  }
   
-  const handleBuyPlayer = (player) => {
+  const handleBuyPlayer = (player, hasBid) => {
     setSelectedPlayer(player);
-    setBuyButtonPressed(true);
+    if (hasBid) {
+      setSellButtonPressed(true);
+    } else {
+      setBuyButtonPressed(true);
+    }
   };
 
   const getPositionColor = (position) => {
@@ -86,6 +115,11 @@ function Market() {
     }
   }
 
+  const getPriceAndBidStatus = (player) => {
+    const bid = bids.find(bid => bid.playerName === player.name);
+    return bid? { price: bid.price, hasBid: true } : { price: player.price, hasBid: false };
+  };
+
   return (
     <View style = {styles.MainContainer}>
       <View style = {styles.HeaderContainer}>
@@ -102,6 +136,7 @@ function Market() {
       </TouchableOpacity>
       <ScrollView ref={scrollViewRef} style = {styles.ScrollView}>
         {players.map((player, index) => {
+          const { price, hasBid } = getPriceAndBidStatus(player);
           return (
             <View style = {styles.PlayerContainer} key={index}>
             <View style = {styles.PlayerTeamPositionContainer}>
@@ -115,9 +150,9 @@ function Market() {
               <Text style = {styles.PlayerPoints}>{player.points}</Text>
             </View>
             <TouchableOpacity 
-              style = {styles.BuyButton}
-              onPress={() => handleBuyPlayer(player)}>
-                <Text style = {styles.PlayerPrice}>{player.price}</Text>
+              style = {[styles.BuyButton, hasBid && {backgroundColor: '#FF3838'}]}
+              onPress={() => handleBuyPlayer(player, hasBid)}>
+                <Text style = {styles.PlayerPrice}>{price}</Text>
             </TouchableOpacity>
           </View>
           );
@@ -147,6 +182,28 @@ function Market() {
               <TouchableOpacity onPress={() => handlePlaceBid(selectedPlayer.name, actualBid)}
               style = {styles.ModalBuyButton}>
                 <Text style = {styles.ModalBuyButtonText}>Pujar</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
+      <Modal
+        animationType="slide"
+        transparent
+        visible={SellButtonPressed}>
+        <View style={styles.ModalBackground}>
+          <View style = {styles.ModalContainer}>
+            <View style={styles.CloseContainer}>
+              <TouchableOpacity onPress={() => setSellButtonPressed(false)}>
+                <Entypo name="cross" size={24} color="black" />
+              </TouchableOpacity>
+            </View>
+            <Text style = {styles.ModalText}>¿Seguro que quieres retirar la puja?</Text>
+            <View style = {styles.PriceCointainer}>
+              <TouchableOpacity onPress={() => handleDeleteBid(selectedPlayer.name)}
+              style = {styles.ModalSellButton}>
+                <Text style = {styles.ModalSellButtonText}>Retirar</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -255,7 +312,7 @@ const styles = StyleSheet.create({
     marginTop: 25,
   },
 
-  //Modal
+  //Buy Modal
   ModalBackground: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
@@ -320,8 +377,24 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 20,
-  }
-    
+  },
+
+  //Sell Modal
+  ModalSellButton: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: '40%',
+    width: '50%',
+    backgroundColor: '#FF3838',
+    borderRadius: 20,
+    borderWidth: 1,
+    marginTop: 10,
+    elevation: 20
+  },
+  ModalSellButtonText: {
+    fontWeight: 'bold',
+    fontSize: 15,
+  },
 });
 
 export default Market;

@@ -3,7 +3,7 @@ import {useNavigation, useFocusEffect, useRoute } from '@react-navigation/native
 import { FontAwesome5 } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons';
 import { StyleSheet, Text, View, TouchableOpacity, TextInput, Modal, FlatList, Image, ScrollView, Alert } from 'react-native';
-
+import { getPlayerOwner } from './FirebaseFunctions';
 
 function Player() {
 
@@ -17,11 +17,26 @@ function Player() {
   const [Season2223ButtonPressed, setSeason2223ButtonPressed] = useState(false);
   const [Season2122ButtonPressed, setSeason2122ButtonPressed] = useState(false);
   const [Season2021ButtonPressed, setSeason2021ButtonPressed] = useState(false);
+  const [Owner, setOwner] = useState(null);
   const [SeasonInfo, setSesonInfo] = useState(player.seasons["2324"]);
   const ImageUrl = player.team === "Madrid" ? require("../../assets/Madrid.png") :
                     player.team === "Atlético de Madrid" ? require("../../assets/Atletico_de_Madrid.png") :
                     require("../../assets/Barça.png");
   //Functions
+  useEffect(() => {
+    handlegetPlayerOwner();
+  }, [])
+
+  const handlegetPlayerOwner = async () => {
+    getPlayerOwner(player.name)
+    .then((data) => {
+      setOwner(data);
+    })
+    .catch(error => {
+        Alert.alert(error.message);
+    });
+};
+
   const getPositionColor = (position) => {
     switch(position) {
       case 'MC':
@@ -156,6 +171,11 @@ function Player() {
               style = {styles.TrophyIcon}
             />
           </View>
+          <View style = {styles.OwnerContainer}>
+            {Owner != null && (
+              <Text style =  {styles.OwnerNameText}><Text style =  {styles.OwnerText}>Propietario:</Text>  {Owner}</Text>
+            )}
+          </View>
           <View style = {styles.BackButtonContainer}>
             <TouchableOpacity onPress={() => navigation.navigate('Search')}
             style = {styles.BackButton}>
@@ -257,6 +277,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     width: '100%',
   },
+  OwnerContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
+    height: 75,
+  },
 
   //Text
   PlayerPosition: {
@@ -329,6 +355,17 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 17,
   },
+  OwnerNameText: {
+    fontWeight: 'bold',
+    textAlign: 'center',
+    fontSize: 20,
+  },
+  OwnerText: {
+    fontWeight: 'bold',
+    textAlign: 'center',
+    fontSize: 20,
+    color: 'rgba(0, 0, 0, 0.5)'
+  },
 
   //Buttons
   Season2324Button: {
@@ -382,8 +419,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     height: 50,
     width: 150,
-    marginTop: 110,
-    backgroundColor: '#1D8700'
+    marginTop: 40,
+    backgroundColor: '#BA82F1'
   },
 
   //Icons

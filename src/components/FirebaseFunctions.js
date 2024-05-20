@@ -24,6 +24,9 @@ let placeBidFunction = null;
 let updateMarketFunction = null;
 let sellPlayerFunction = null;
 let alignPlayerFunction = null;
+let getPlayerOwnerFunction = null;
+let getPlayerBidsFunction = null;
+let deletePlayerBidsFunction = null;
 
 //Inicializa la app de Firebase
 export const initializeFirebase = () => {
@@ -44,6 +47,9 @@ export const initializeFirebase = () => {
   updateMarketFunction = httpsCallable(getFunctions(app), 'updateMarketPlayers');
   sellPlayerFunction = httpsCallable(getFunctions(app), 'sellPlayer');
   alignPlayerFunction = httpsCallable(getFunctions(app), 'alignPlayer');
+  getPlayerOwnerFunction = httpsCallable(getFunctions(app), 'getPlayerOwner');
+  getPlayerBidsFunction = httpsCallable(getFunctions(app), 'getPlayerBids');
+  deletePlayerBidsFunction = httpsCallable(getFunctions(app), 'deletePlayerBid');
   return app;
 };
 
@@ -324,6 +330,41 @@ export const sellPlayer = async (playerName, price) => {
 
 export const alignPlayer = async (actualPlayer, newPlayer) => {
   return alignPlayerFunction({actualPlayer: actualPlayer, newPlayer: newPlayer})
+  .then((result) => {
+    return result;
+  })
+  .catch((error) => {
+    console.log('Error: ' + error);
+    console.log('Error message: ' + error.message);
+  })
+};
+
+export const getPlayerOwner = async (playerName) => {
+  return getPlayerOwnerFunction({playerName: playerName})
+  .then((result) => {
+    const owner = result.data.owner;
+    return owner;
+  })
+  .catch((error) => {
+    console.log('Error: ' + error);
+    console.log('Error message: ' + error.message);
+  })
+};
+
+export const getPlayerBids = async () => {
+  return getPlayerBidsFunction()
+  .then((result) => {
+    const bids = result.data.playerBids;
+    return bids;
+  })
+  .catch((error) => {
+    console.log('Error: ' + error);
+    console.log('Error message: ' + error.message);
+  })
+};
+
+export const deletePlayerBid = async (playerName) => {
+  return deletePlayerBidsFunction({playerName: playerName})
   .then((result) => {
     return result;
   })

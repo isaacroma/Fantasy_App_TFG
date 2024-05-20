@@ -14,6 +14,7 @@ function SearchPlayers() {
   //Variables
   const scrollViewRef = useRef(null);
   const [FilterButtonPresses, setFilterButtonPressed] = useState(false);
+  const [AIButtonPressed, setAIButtonPressed] = useState(false);
   const [favoritePlayers, setFavoritePlayers] = useState([]);
   const [players, setPlayers] = useState([]);
   const [allPlayers, setAllPlayers] = useState([]);
@@ -202,11 +203,18 @@ function SearchPlayers() {
             color="white"/>
           </TouchableOpacity>
         </View>
-        <TouchableOpacity 
-        style = {styles.FilterButton}
-        onPress={handleFilters}>
-          <Text>Filtros</Text>
-        </TouchableOpacity>
+        <View style = {styles.FilterContainer}>
+          <TouchableOpacity 
+          style = {styles.FilterButton}
+          onPress={handleFilters}>
+            <Text>Filtros</Text>
+          </TouchableOpacity>
+          <TouchableOpacity 
+          onPress={() => setAIButtonPressed(true)}
+          style = {styles.AIManagerButton}>
+            <Text>AI Manager</Text>
+          </TouchableOpacity>
+        </View>
       </View>
       <ScrollView ref={scrollViewRef} style = {styles.ScrollView}>
         {players.map((player, index) => {
@@ -301,6 +309,24 @@ function SearchPlayers() {
         </View>
       </Modal>
 
+      <Modal
+        animationType="slide"
+        transparent
+        visible={AIButtonPressed}>
+        <View style={styles.ModalBackground}>
+          <View style = {styles.ModalContainer}>
+            <View style={styles.CloseContainer}>
+              <TouchableOpacity onPress={() => setAIButtonPressed(false)}>
+                <Entypo name="cross" size={24} color="black" />
+              </TouchableOpacity>
+            </View>
+            <Text style = {styles.AITitle}>Bienvenido al AI Manager</Text>
+            <Text style = {styles.AIText}>Agrega un jugador a favoritos para que el AI Manager realize una puja por este jugador cuando salga al mercado</Text>
+            <Text style = {styles.AIText2}>Nota: El manager va a pujar un 10% por sobre del valor del jugador siempre y cuando tu saldo lo permita</Text>
+          </View>
+        </View>
+      </Modal>
+
     </View>
   );
 }
@@ -363,6 +389,13 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 5
   },
+  FilterContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+    width: '100%',
+    marginTop: 5,
+  },
 
   //Buttons
   SearchButton: {
@@ -392,10 +425,22 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: '#CDCDCD',
     width: 150,
-    height: '25%',
+    height: 30,
     borderRadius: 20,
     borderWidth: 1,
-    elevation: 10
+    elevation: 10,
+    marginRight: 5
+  },
+  AIManagerButton: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#BA82F1',
+    width: 150,
+    height: 30,
+    borderRadius: 20,
+    borderWidth: 1,
+    elevation: 10,
+    marginLeft: 5
   },
 
   //Inputs
@@ -594,6 +639,27 @@ const styles = StyleSheet.create({
     width: 100,
     borderRadius: 20,
     borderWidth: 1
+  },
+
+  //AI Manager Modal
+  AITitle: {
+    textAlign: 'center',
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 5
+  },
+  AIText: {
+    textAlign: 'center',
+    fontSize: 13,
+    fontWeight: 'bold',
+    marginBottom: 5
+  },
+  AIText2: {
+    textAlign: 'center',
+    fontSize: 12,
+    fontWeight: 'bold',
+    marginBottom: 5,
+    color: 'rgba(0, 0, 0, 0.5)'
   }
 });
 
