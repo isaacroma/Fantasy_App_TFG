@@ -1,8 +1,8 @@
 import React, {useState, useRef, useEffect} from 'react'
 import {useNavigation, useFocusEffect} from '@react-navigation/native';
 import { FontAwesome5 } from '@expo/vector-icons';
-import { StyleSheet, Text, View, TouchableOpacity, TextInput, Modal, FlatList, ScrollView } from 'react-native';
-import { getGeneralClassification } from './FirebaseFunctions';
+import { StyleSheet, Text, View, TouchableOpacity, TextInput, Modal, Alert, FlatList, ScrollView } from 'react-native';
+import { getGeneralClassification, playRound } from './FirebaseFunctions';
 
 function Clasification() {
 
@@ -29,6 +29,17 @@ function Clasification() {
         getGeneralClassification()
         .then((data) => {
             setUsers(data);
+        })
+        .catch(error => {
+            Alert.alert(error.message);
+        });
+    };
+
+    const handlePlayRound = async () => {
+        playRound()
+        .then((data) => {
+            Alert.alert("Jornada jugada");
+            handlegetGeneralClassification();
         })
         .catch(error => {
             Alert.alert(error.message);
@@ -68,6 +79,9 @@ function Clasification() {
                     <Text style = {styles.Text}>Jornada</Text>
                 </TouchableOpacity>
             </View>
+            <TouchableOpacity onPress={() => handlePlayRound()}>
+                <Text>Jugar Jornada</Text>
+            </TouchableOpacity>
             <ScrollView ref={scrollViewRef} style = {styles.ScrollView}>
                 {users.map((user, index) => {
                     return (

@@ -27,6 +27,7 @@ let alignPlayerFunction = null;
 let getPlayerOwnerFunction = null;
 let getPlayerBidsFunction = null;
 let deletePlayerBidsFunction = null;
+let playRoundFunction = null;
 
 //Inicializa la app de Firebase
 export const initializeFirebase = () => {
@@ -50,6 +51,7 @@ export const initializeFirebase = () => {
   getPlayerOwnerFunction = httpsCallable(getFunctions(app), 'getPlayerOwner');
   getPlayerBidsFunction = httpsCallable(getFunctions(app), 'getPlayerBids');
   deletePlayerBidsFunction = httpsCallable(getFunctions(app), 'deletePlayerBid');
+  playRoundFunction = httpsCallable(getFunctions(app), 'playRound');
   return app;
 };
 
@@ -119,10 +121,10 @@ export const getUserLeague = async () => {
 
 //Función para crear un documento en la colección "Leagues" asociada al usuario logueado
 export const createLeague = async (leagueName) => {
-  
-  createLeagueFunction({leagueName: leagueName})
+  return createLeagueFunction({leagueName: leagueName})
   .then((result) => {
-    return result;
+    const response = result.data;
+    return response;
   })
   .catch((error) => {
     console.log('Error: ' + error);
@@ -374,6 +376,15 @@ export const deletePlayerBid = async (playerName) => {
   })
 };
 
-
+export const playRound = async () => {
+  return playRoundFunction()
+  .then((result) => {
+    return result;
+  })
+  .catch((error) => {
+    console.log('Error: ' + error);
+    console.log('Error message: ' + error.message);
+  })
+};
 
 

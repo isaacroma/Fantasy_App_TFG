@@ -42,8 +42,15 @@ function CreateLeague() {
 
   const handleCreateLeague = () => {
     createLeague(leagueName)
-    .then(() => {
-      navigation.navigate('BottomTab');
+    .then(response => {
+      console.log(response);
+      if (response.success === true) {
+          setTimeout(() => {
+              navigation.navigate('BottomTab');
+          }, 5000);
+      } else {
+          Alert.alert(response.error);
+      }
     })
     .catch(error => {
       Alert.alert(error.message);
