@@ -1,15 +1,16 @@
 import React, {useState, useRef, useEffect} from 'react'
 import {useNavigation, useFocusEffect} from '@react-navigation/native';
 import { FontAwesome5 } from '@expo/vector-icons';
-import { StyleSheet, Text, View, TouchableOpacity, TextInput, Modal, FlatList, ScrollView } from 'react-native';
-import { getGeneralClassification } from './FirebaseFunctions';
+import i18next from '../../services/i18next';
+import { useTranslation } from 'react-i18next';
+import { StyleSheet, Text, View, TouchableOpacity, TextInput, Modal, Alert, FlatList, ScrollView } from 'react-native';
+import { getGeneralClassification, playRound } from './FirebaseFunctions';
 
 function Clasification() {
 
-    //Navigation
-    const navigation = useNavigation();
-
     //Variables
+    const {t} = useTranslation();
+    const navigation = useNavigation();
     const scrollViewRef = useRef(null);
     const [isGeneralButtonActive, setisGeneralButtonActive] = useState(true);
     const [isJourneyButtonActive, setisJourneyButtonActive] = useState(false);
@@ -35,6 +36,17 @@ function Clasification() {
         });
     };
 
+    const handlePlayRound = async () => {
+        playRound()
+        .then((data) => {
+            Alert.alert(t("Jornada jugada"));
+            handlegetGeneralClassification();
+        })
+        .catch(error => {
+            Alert.alert(error.message);
+        });
+    };
+
     const handlePressGeneralButton = () => {
         setisGeneralButtonActive(true);
         setisJourneyButtonActive(false);
@@ -48,7 +60,7 @@ function Clasification() {
     return (
         <View style = {styles.MainContainer}>
             <View style = {styles.HeaderContainer}>
-                <Text style = {styles.PrincipalTitle}>Clasificación</Text>
+                <Text style = {styles.PrincipalTitle}>{t('Clasificación')}</Text>
                 <FontAwesome5 
                     name="trophy" 
                     size={70} 
@@ -60,14 +72,17 @@ function Clasification() {
                 <TouchableOpacity 
                     style = {[styles.GeneralButton, { backgroundColor: isGeneralButtonActive ? '#2DBC07' : '#DCDCDC' }]}
                     onPress={handlePressGeneralButton}>
-                    <Text style = {styles.Text}>General</Text>
+                    <Text style = {styles.Text}>{t('General')}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity 
                     style = {[styles.JourneyButton, { backgroundColor: isJourneyButtonActive ? '#2DBC07' : '#DCDCDC' }]}
                     onPress={handlePressJourneyButton}>
-                    <Text style = {styles.Text}>Jornada</Text>
+                    <Text style = {styles.Text}>{t('Jornada')}</Text>
                 </TouchableOpacity>
             </View>
+            <TouchableOpacity onPress={() => handlePlayRound()}>
+                <Text>{t('Jugar Jornada')}</Text>
+            </TouchableOpacity>
             <ScrollView ref={scrollViewRef} style = {styles.ScrollView}>
                 {users.map((user, index) => {
                     return (

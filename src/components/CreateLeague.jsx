@@ -5,15 +5,16 @@ import { FontAwesome5 } from '@expo/vector-icons';
 import { FontAwesome6 } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Entypo } from '@expo/vector-icons';
+import i18next from '../../services/i18next';
+import { useTranslation } from 'react-i18next';
 import { StyleSheet, Text, View, TouchableOpacity, TextInput, Modal, FlatList, Alert } from 'react-native';
 import { createLeague, searchLeague, searchAllLeagues, joinLeague } from './FirebaseFunctions';
 
 function CreateLeague() {
 
-  //Navigation
-  const navigation = useNavigation();
-
   //Variables
+  const {t} = useTranslation();
+  const navigation = useNavigation();
   const [leagueName, setLeagueName] = useState('');
   const [searchText, setSearchText] = useState('');
   const [searchResults, setSearchResults] = useState([]);
@@ -42,8 +43,15 @@ function CreateLeague() {
 
   const handleCreateLeague = () => {
     createLeague(leagueName)
-    .then(() => {
-      navigation.navigate('BottomTab');
+    .then(response => {
+      console.log(response);
+      if (response.success === true) {
+          setTimeout(() => {
+              navigation.navigate('BottomTab');
+          }, 5000);
+      } else {
+          Alert.alert(response.error);
+      }
     })
     .catch(error => {
       Alert.alert(error.message);
@@ -111,19 +119,19 @@ function CreateLeague() {
       <Text style = {styles.MainTitle}>Fantasy App</Text>
 
       <View style = {styles.MainTextContainer}>
-        <Text style = {styles.MainText}>Crea o únete a una liga para jugar con tus amigos</Text>
+        <Text style = {styles.MainText}>{t('Crea o únete a una liga para jugar con tus amigos')}</Text>
       </View>
 
       <View style = {styles.SearchButtonContainer}>
           <TouchableOpacity 
             style = {styles.CreateButton}
             onPress={hadleOpenCreateLeagueModal}>
-              <Text style = {styles.SearchText}>Crear Liga</Text>
+              <Text style = {styles.SearchText}>{t('Crear Liga')}</Text>
           </TouchableOpacity>
           <TouchableOpacity 
             style = {styles.SearchButton}
             onPress={handleOpenSearchLeagueModal}>
-              <Text style = {styles.SearchText}>Buscar Liga</Text>
+              <Text style = {styles.SearchText}>{t('Buscar Liga')}</Text>
           </TouchableOpacity>
       </View>
 
@@ -157,11 +165,11 @@ function CreateLeague() {
               <TextInput
                 style = {styles.CreateInput}
                 onChangeText={setLeagueName}
-                placeholder={'Nombre de la liga'}>
+                placeholder={t('Nombre de la liga')}>
               </TextInput>
               <TouchableOpacity onPress={handleCreateLeague}
                 style = {styles.CreateLeagueButton}>
-                <Text style = {styles.SearchText}>Crear Liga</Text>
+                <Text style = {styles.SearchText}>{t('Crear Liga')}</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -183,7 +191,7 @@ function CreateLeague() {
               <TextInput
                 style = {styles.SearchInput}
                 onChangeText={handleSearchLeague}
-                placeholder={'Nombre de la liga'}>
+                placeholder={t('Nombre de la liga')}>
               </TextInput>
               <TouchableOpacity
                 style = {styles.SearchLeagueButton}>

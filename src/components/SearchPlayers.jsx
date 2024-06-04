@@ -3,18 +3,19 @@ import {useNavigation, useFocusEffect} from '@react-navigation/native';
 import { Entypo } from '@expo/vector-icons';
 import { FontAwesome6 } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
+import i18next from '../../services/i18next';
+import { useTranslation } from 'react-i18next';
 import { StyleSheet, Text, View, TouchableOpacity, TextInput, Modal, FlatList, ScrollView, Alert } from 'react-native';
 import { obtainPlayers, searchPlayer, filterPlayersByPosition, filterPlayersByPrice, addFovoritePlayer } from './FirebaseFunctions';
 
 function SearchPlayers() {
 
-  //Navigation
-  const navigation = useNavigation();
-
   //Variables
+  const {t} = useTranslation();
+  const navigation = useNavigation();
   const scrollViewRef = useRef(null);
-  //const [selectedPlayer, setSelectedPlayer] = useState(null);
   const [FilterButtonPresses, setFilterButtonPressed] = useState(false);
+  const [AIButtonPressed, setAIButtonPressed] = useState(false);
   const [favoritePlayers, setFavoritePlayers] = useState([]);
   const [players, setPlayers] = useState([]);
   const [allPlayers, setAllPlayers] = useState([]);
@@ -28,7 +29,6 @@ function SearchPlayers() {
   const [Price2ButtonPressed, setPrice2ButtonPressed] = useState(false);
   const [Price3ButtonPressed, setPrice3ButtonPressed] = useState(false);
   const [Price4ButtonPressed, setPrice4ButtonPressed] = useState(false);
-  
 
   //Functions
   useFocusEffect(
@@ -195,7 +195,7 @@ function SearchPlayers() {
           <TextInput
             style = {styles.SearchInput}
             onChangeText={handleSearchPlayer}
-            placeholder={'Buscar jugador'}>
+            placeholder={t('Buscar jugador')}>
           </TextInput>
           <TouchableOpacity style = {styles.SearchButton}>
             <FontAwesome6 
@@ -204,36 +204,44 @@ function SearchPlayers() {
             color="white"/>
           </TouchableOpacity>
         </View>
-        <TouchableOpacity 
-        style = {styles.FilterButton}
-        onPress={handleFilters}>
-          <Text>Filtros</Text>
-        </TouchableOpacity>
+        <View style = {styles.FilterContainer}>
+          <TouchableOpacity 
+          style = {styles.FilterButton}
+          onPress={handleFilters}>
+            <Text>{t('Filtros')}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity 
+          onPress={() => setAIButtonPressed(true)}
+          style = {styles.AIManagerButton}>
+            <Text>{t('AI Manager')}</Text>
+          </TouchableOpacity>
+        </View>
       </View>
       <ScrollView ref={scrollViewRef} style = {styles.ScrollView}>
         {players.map((player, index) => {
           return (
-            <View style = {styles.PlayerContainer} key={index}>
-            <View style = {styles.PlayerTeamPositionContainer}>
-              <Text style = {styles.PlayerTeam}>{player.team}</Text>
-              <View style = {[styles.PlayePositionContainer, {backgroundColor: getPositionColor(player.position)}]}>
-                <Text style = {styles.PlayerPosition}>{player.position}</Text>
+            <TouchableOpacity onPress={() => navigation.navigate('Player', { player: player })}
+            style = {styles.PlayerContainer} key={index}>
+              <View style = {styles.PlayerTeamPositionContainer}>
+                <Text style = {styles.PlayerTeam}>{player.team}</Text>
+                <View style = {[styles.PlayePositionContainer, {backgroundColor: getPositionColor(player.position)}]}>
+                  <Text style = {styles.PlayerPosition}>{player.position}</Text>
+                </View>
               </View>
-            </View>
-            <View style = {styles.PlayerNamePointsContainer}>
-              <Text style = {styles.PlayerName}>{player.name}</Text>
-              <Text style = {styles.PlayerPoints}>{player.points}</Text>
-            </View>
-            <TouchableOpacity 
-              style = {styles.FavoriteButton}
-              onPress={() => handleAddFavoritePlayer(player.name, index)}>
-              <MaterialIcons 
-                name={favoritePlayers[index] ? "favorite" : "favorite-outline"}  
-                size={24} 
-                color="black" 
-              />
+              <View style = {styles.PlayerNamePointsContainer}>
+                <Text style = {styles.PlayerName}>{player.name}</Text>
+                <Text style = {styles.PlayerPoints}>{player.points}</Text>
+              </View>
+              <TouchableOpacity 
+                style = {styles.FavoriteButton}
+                onPress={() => handleAddFavoritePlayer(player.name, index)}>
+                <MaterialIcons 
+                  name={favoritePlayers[index] ? "favorite" : "favorite-outline"}  
+                  size={24} 
+                  color="black" 
+                />
+              </TouchableOpacity>
             </TouchableOpacity>
-          </View>
           );
         })}
       </ScrollView>
@@ -250,7 +258,7 @@ function SearchPlayers() {
               </TouchableOpacity>
             </View>
             <View style = {styles.PositionFilterContainer}>
-              <Text style = {styles.Text}>Posición</Text>
+              <Text style = {styles.Text}>{t('Posición')}</Text>
               <View style = {styles.PositionButtonsContainer}>
                 <TouchableOpacity onPress={() => handleFilterPlayersByPosition('POR')}
                 style = {[styles.PORButton, { backgroundColor: PORButtonPressed ? '#2DBC07' : '#DCDCDC' }]}>
@@ -272,7 +280,7 @@ function SearchPlayers() {
             </View>
 
             <View style = {styles.PriceFilterContainer}>
-              <Text style = {styles.Text}>Precio</Text>
+              <Text style = {styles.Text}>{t('Precio')}</Text>
               <View style = {styles.PriceButtonsContainer}>
                 <TouchableOpacity onPress={() => handleFilterPlayersByPrice(0, 1000000)}
                 style = {[styles.Price1Button, { backgroundColor: Price1ButtonPressed ? '#2DBC07' : '#DCDCDC' }]}>
@@ -295,9 +303,27 @@ function SearchPlayers() {
             <View style = {styles.DeleteFiltersContainer}>
               <TouchableOpacity onPress={handleDeleteFilters}
               style = {styles.DeleteFiltersButton}>
-                <Text>Borrar Filtros</Text>
+                <Text>{t('Borrar Filtros')}</Text>
               </TouchableOpacity>
             </View>
+          </View>
+        </View>
+      </Modal>
+
+      <Modal
+        animationType="slide"
+        transparent
+        visible={AIButtonPressed}>
+        <View style={styles.ModalBackground}>
+          <View style = {styles.ModalContainer}>
+            <View style={styles.CloseContainer}>
+              <TouchableOpacity onPress={() => setAIButtonPressed(false)}>
+                <Entypo name="cross" size={24} color="black" />
+              </TouchableOpacity>
+            </View>
+            <Text style = {styles.AITitle}>{t('Bienvenido al AI Manager')}</Text>
+            <Text style = {styles.AIText}>{t('Agrega un jugador a favoritos para que el AI Manager realize una puja por este jugador cuando salga al mercado')}</Text>
+            <Text style = {styles.AIText2}>{t('Nota: El manager va a pujar un 10% por sobre del valor del jugador siempre y cuando tu saldo lo permita')}</Text>
           </View>
         </View>
       </Modal>
@@ -364,6 +390,13 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 5
   },
+  FilterContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+    width: '100%',
+    marginTop: 5,
+  },
 
   //Buttons
   SearchButton: {
@@ -393,10 +426,22 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: '#CDCDCD',
     width: 150,
-    height: '25%',
+    height: 30,
     borderRadius: 20,
     borderWidth: 1,
-    elevation: 10
+    elevation: 10,
+    marginRight: 5
+  },
+  AIManagerButton: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#BA82F1',
+    width: 150,
+    height: 30,
+    borderRadius: 20,
+    borderWidth: 1,
+    elevation: 10,
+    marginLeft: 5
   },
 
   //Inputs
@@ -595,6 +640,27 @@ const styles = StyleSheet.create({
     width: 100,
     borderRadius: 20,
     borderWidth: 1
+  },
+
+  //AI Manager Modal
+  AITitle: {
+    textAlign: 'center',
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 5
+  },
+  AIText: {
+    textAlign: 'center',
+    fontSize: 13,
+    fontWeight: 'bold',
+    marginBottom: 5
+  },
+  AIText2: {
+    textAlign: 'center',
+    fontSize: 12,
+    fontWeight: 'bold',
+    marginBottom: 5,
+    color: 'rgba(0, 0, 0, 0.5)'
   }
 });
 

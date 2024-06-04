@@ -1,5 +1,4 @@
 import React from 'react';
-import { Alert } from 'react-native';
 import { initializeApp } from 'firebase/app';
 import { getFirestore, collection, addDoc, setDoc, getDoc, query, where, getDocs, updateDoc, doc, arrayUnion } from 'firebase/firestore';
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile } from 'firebase/auth';
@@ -23,6 +22,14 @@ let getMarketPlayersFunction = null;
 let getUserTeamFunction = null;
 let placeBidFunction = null;
 let updateMarketFunction = null;
+let sellPlayerFunction = null;
+let alignPlayerFunction = null;
+let getPlayerOwnerFunction = null;
+let getPlayerBidsFunction = null;
+let deletePlayerBidsFunction = null;
+let playRoundFunction = null;
+let getUserLanguageFunction = null;
+let changeUserLanguageFunction = null;
 
 //Inicializa la app de Firebase
 export const initializeFirebase = () => {
@@ -41,6 +48,14 @@ export const initializeFirebase = () => {
   getUserTeamFunction = httpsCallable(getFunctions(app), 'getUserTeam');
   placeBidFunction = httpsCallable(getFunctions(app), 'placeBid');
   updateMarketFunction = httpsCallable(getFunctions(app), 'updateMarketPlayers');
+  sellPlayerFunction = httpsCallable(getFunctions(app), 'sellPlayer');
+  alignPlayerFunction = httpsCallable(getFunctions(app), 'alignPlayer');
+  getPlayerOwnerFunction = httpsCallable(getFunctions(app), 'getPlayerOwner');
+  getPlayerBidsFunction = httpsCallable(getFunctions(app), 'getPlayerBids');
+  deletePlayerBidsFunction = httpsCallable(getFunctions(app), 'deletePlayerBid');
+  playRoundFunction = httpsCallable(getFunctions(app), 'playRound');
+  getUserLanguageFunction = httpsCallable(getFunctions(app), 'getUserLanguage');
+  changeUserLanguageFunction = httpsCallable(getFunctions(app), 'changeUserLanguage');
   return app;
 };
 
@@ -110,10 +125,10 @@ export const getUserLeague = async () => {
 
 //Función para crear un documento en la colección "Leagues" asociada al usuario logueado
 export const createLeague = async (leagueName) => {
-  
-  createLeagueFunction({leagueName: leagueName})
+  return createLeagueFunction({leagueName: leagueName})
   .then((result) => {
-    return result;
+    const response = result.data;
+    return response;
   })
   .catch((error) => {
     console.log('Error: ' + error);
@@ -269,8 +284,8 @@ export const getUserTeam = async() => {
   })
 }
 
-export const placeBid = async (playerName, bid) => {
-  return placeBidFunction({playerName: playerName, bid: bid})
+export const placeBid = async (playerName, bid, date) => {
+  return placeBidFunction({playerName: playerName, bid: bid, date: date})
   .then((result) => {
     return result;
   })
@@ -291,6 +306,112 @@ export const updateMarketPlayers = async () => {
   })
 }
 
+export const addPlayersToFirestore = async (players) => {
+  try {
+    const db = getFirestore(app);
+    const playersCollection = collection(db, 'Players');
 
+    for (const player of players) {
+      await addDoc(playersCollection, player);
+    }
+    return true;
+  } catch (error) {
+      console.log('Error: ' + error);
+      console.log('Error message: ' + error.message);
+      return false;
+  }
+};
+
+//Función para vender un jugador
+export const sellPlayer = async (playerName, price) => {
+  return sellPlayerFunction({playerName: playerName, price: price})
+  .then((result) => {
+    return result;
+  })
+  .catch((error) => {
+    console.log('Error: ' + error);
+    console.log('Error message: ' + error.message);
+  })
+}
+
+export const alignPlayer = async (actualPlayer, newPlayer) => {
+  return alignPlayerFunction({actualPlayer: actualPlayer, newPlayer: newPlayer})
+  .then((result) => {
+    return result;
+  })
+  .catch((error) => {
+    console.log('Error: ' + error);
+    console.log('Error message: ' + error.message);
+  })
+};
+
+export const getPlayerOwner = async (playerName) => {
+  return getPlayerOwnerFunction({playerName: playerName})
+  .then((result) => {
+    const owner = result.data.owner;
+    return owner;
+  })
+  .catch((error) => {
+    console.log('Error: ' + error);
+    console.log('Error message: ' + error.message);
+  })
+};
+
+export const getPlayerBids = async () => {
+  return getPlayerBidsFunction()
+  .then((result) => {
+    const bids = result.data.playerBids;
+    return bids;
+  })
+  .catch((error) => {
+    console.log('Error: ' + error);
+    console.log('Error message: ' + error.message);
+  })
+};
+
+export const deletePlayerBid = async (playerName) => {
+  return deletePlayerBidsFunction({playerName: playerName})
+  .then((result) => {
+    return result;
+  })
+  .catch((error) => {
+    console.log('Error: ' + error);
+    console.log('Error message: ' + error.message);
+  })
+};
+
+export const playRound = async () => {
+  return playRoundFunction()
+  .then((result) => {
+    return result;
+  })
+  .catch((error) => {
+    console.log('Error: ' + error);
+    console.log('Error message: ' + error.message);
+  })
+};
+
+export const getUserLanguage = async () => {
+  return getUserLanguageFunction()
+  .then((result) => {
+    const language = result.data.language;
+    return language;
+  })
+  .catch((error) => {
+    console.log('Error: ' + error);
+    console.log('Error message: ' + error.message);
+  })
+};
+
+export const changeUserLanguage = async (language) => {
+  return changeUserLanguageFunction({language: language})
+  .then((result) => {
+    return result;
+  })
+  .catch((error) => {
+    console.log('Error: ' + error);
+    console.log('Error message: ' + error.message);
+  })
+};
 
 
