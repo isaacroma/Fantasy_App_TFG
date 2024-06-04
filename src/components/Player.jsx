@@ -2,17 +2,18 @@ import React, {useState, useRef, useEffect} from 'react'
 import {useNavigation, useFocusEffect, useRoute } from '@react-navigation/native';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons';
+import i18next from '../../services/i18next';
+import { useTranslation } from 'react-i18next';
 import { StyleSheet, Text, View, TouchableOpacity, TextInput, Modal, FlatList, Image, ScrollView, Alert } from 'react-native';
 import { getPlayerOwner } from './FirebaseFunctions';
 
 function Player() {
 
-  //Navigation
+  //Variables
+  const {t} = useTranslation();
   const navigation = useNavigation();
   const route = useRoute();
   const { player } = route.params;
-
-  //Variables
   const [Season2324ButtonPressed, setSeason2324ButtonPressed] = useState(true);
   const [Season2223ButtonPressed, setSeason2223ButtonPressed] = useState(false);
   const [Season2122ButtonPressed, setSeason2122ButtonPressed] = useState(false);
@@ -99,16 +100,16 @@ function Player() {
         </View>
         <View style = {styles.PointsPriceContainer}>
           <View style = {styles.PlayerPointsContainer}>
-            <Text style = {styles.PlayerPointsTitle}>Puntos:</Text>
+            <Text style = {styles.PlayerPointsTitle}>{t('Puntos')}</Text>
             <Text style = {styles.PlayerPoints}>{player.points}</Text>
           </View>
           <View style = {styles.PlayerPriceContainer}>
-            <Text style = {styles.PlayerPriceTitle}>Precio:</Text>
+            <Text style = {styles.PlayerPriceTitle}>{t('Precio')}</Text>
             <Text style = {styles.PlayerPrice}>{player.price}</Text>
           </View>
         </View>
         <View style = {styles.DetailedInfoContainer}>
-          <Text style = {styles.DetailedInfoTitle}>Información detallada</Text>
+          <Text style = {styles.DetailedInfoTitle}>{t('Información detallada')}</Text>
           <View style = {styles.SeasonsButtonsContainer}>
             <TouchableOpacity onPress={() => handleSeason('23/24')}
             style = {[styles.Season2324Button, { backgroundColor: Season2324ButtonPressed ? '#2DBC07' : '#DCDCDC' }]}>
@@ -129,39 +130,39 @@ function Player() {
           </View>
           <View style = {styles.SeasonInfoContainer}>
             <View style = {styles.StatsContainer}>
-              <Text style = {styles.SeasonInfoText}>Puntos:</Text>
+              <Text style = {styles.SeasonInfoText}>{t('Puntos')}</Text>
               <Text style = {styles.Stats}>{SeasonInfo.points}</Text>
             </View>
             {player.position === 'POR' && (
             <View>
               <View style = {styles.StatsContainer}>
-                <Text style = {styles.SeasonInfoText}>Goles recibidos:</Text>
+                <Text style = {styles.SeasonInfoText}>{t('Goles recibidos')}</Text>
                 <Text style = {styles.Stats}>{SeasonInfo.againstGoals}</Text>
               </View>
               <View style = {styles.StatsContainer}>
-                <Text style = {styles.SeasonInfoText}>Porterias a zero:</Text>
+                <Text style = {styles.SeasonInfoText}>{t('Porterias a zero')}</Text>
                 <Text style = {styles.Stats}>{SeasonInfo.zeroGoals}</Text>
               </View>
             </View>
             )}
             <View style = {styles.StatsContainer}>
-              <Text style = {styles.SeasonInfoText}>Goles:</Text>
+              <Text style = {styles.SeasonInfoText}>{t('Goles')}</Text>
               <Text style = {styles.Stats}>{SeasonInfo.goals}</Text>
             </View>
             <View style = {styles.StatsContainer}>
-              <Text style = {styles.SeasonInfoText}>Asistencias:</Text>
+              <Text style = {styles.SeasonInfoText}>{t('Asistencias')}</Text>
               <Text style = {styles.Stats}>{SeasonInfo.asists}</Text>
             </View>
             <View style = {styles.StatsContainer}>
-              <Text style = {styles.SeasonInfoText}>Tarjetas amarillas:</Text>
+              <Text style = {styles.SeasonInfoText}>{t('Tarjetas amarillas')}</Text>
               <Text style = {styles.Stats}>{SeasonInfo.yellowCards}</Text>
             </View>
             <View style = {styles.StatsContainer}>
-              <Text style = {styles.SeasonInfoText}>Tarjetas rojas:</Text>
+              <Text style = {styles.SeasonInfoText}>{t('Tarjetas rojas')}</Text>
               <Text style = {styles.Stats}>{SeasonInfo.redCards}</Text>
             </View>
             <View style = {styles.StatsContainer}>
-              <Text style = {styles.SeasonInfoText}>Partidos:</Text>
+              <Text style = {styles.SeasonInfoText}>{t('Partidos')}</Text>
               <Text style = {styles.Stats}>{SeasonInfo.matches}</Text>
             </View>
             <FontAwesome5 
@@ -173,13 +174,13 @@ function Player() {
           </View>
           <View style = {styles.OwnerContainer}>
             {Owner != null && (
-              <Text style =  {styles.OwnerNameText}><Text style =  {styles.OwnerText}>Propietario:</Text>  {Owner}</Text>
+              <Text style =  {styles.OwnerNameText}><Text style =  {styles.OwnerText}>{t('Propietario')}</Text>  {Owner}</Text>
             )}
           </View>
           <View style = {styles.BackButtonContainer}>
             <TouchableOpacity onPress={() => navigation.navigate('Search')}
             style = {styles.BackButton}>
-              <Text style = {styles.BackText}>Atras</Text>
+              <Text style = {styles.BackText}>{t('Atras')}</Text>
             </TouchableOpacity>
           </View>
         </View>

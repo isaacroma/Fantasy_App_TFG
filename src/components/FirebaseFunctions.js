@@ -28,6 +28,8 @@ let getPlayerOwnerFunction = null;
 let getPlayerBidsFunction = null;
 let deletePlayerBidsFunction = null;
 let playRoundFunction = null;
+let getUserLanguageFunction = null;
+let changeUserLanguageFunction = null;
 
 //Inicializa la app de Firebase
 export const initializeFirebase = () => {
@@ -52,6 +54,8 @@ export const initializeFirebase = () => {
   getPlayerBidsFunction = httpsCallable(getFunctions(app), 'getPlayerBids');
   deletePlayerBidsFunction = httpsCallable(getFunctions(app), 'deletePlayerBid');
   playRoundFunction = httpsCallable(getFunctions(app), 'playRound');
+  getUserLanguageFunction = httpsCallable(getFunctions(app), 'getUserLanguage');
+  changeUserLanguageFunction = httpsCallable(getFunctions(app), 'changeUserLanguage');
   return app;
 };
 
@@ -378,6 +382,29 @@ export const deletePlayerBid = async (playerName) => {
 
 export const playRound = async () => {
   return playRoundFunction()
+  .then((result) => {
+    return result;
+  })
+  .catch((error) => {
+    console.log('Error: ' + error);
+    console.log('Error message: ' + error.message);
+  })
+};
+
+export const getUserLanguage = async () => {
+  return getUserLanguageFunction()
+  .then((result) => {
+    const language = result.data.language;
+    return language;
+  })
+  .catch((error) => {
+    console.log('Error: ' + error);
+    console.log('Error message: ' + error.message);
+  })
+};
+
+export const changeUserLanguage = async (language) => {
+  return changeUserLanguageFunction({language: language})
   .then((result) => {
     return result;
   })

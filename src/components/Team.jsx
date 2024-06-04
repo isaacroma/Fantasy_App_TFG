@@ -2,15 +2,16 @@ import React, {useState, useRef, useEffect} from 'react'
 import {useNavigation, useFocusEffect} from '@react-navigation/native';
 import { Entypo } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons';
+import i18next from '../../services/i18next';
+import { useTranslation } from 'react-i18next';
 import { StyleSheet, Text, View, TouchableOpacity, TextInput, Modal, FlatList, ImageBackground, ScrollView, Alert } from 'react-native';
-import { getUserTeam, sellPlayer, alignPlayer } from './FirebaseFunctions';
+import { getUserTeam, sellPlayer, alignPlayer, getUserLanguage } from './FirebaseFunctions';
 
 function Team() {
 
-  //Navigation
-  const navigation = useNavigation();
-
   //Variables
+  const {t} = useTranslation();
+  const navigation = useNavigation();
   const scrollViewRef = useRef(null);
   const [players, setPlayers] = useState([]);
   const [money, setMoney] = useState(null);
@@ -36,6 +37,7 @@ function Team() {
   );
 
   useEffect(() => {
+    handleSetUserLanguage();
     handlegetUserInfo();
   }, [])
 
@@ -53,6 +55,16 @@ function Team() {
     setAlignedPORPlayers(AlignedPlayers.filter((player) => player.position === 'POR'));
   }, [AlignedPlayers])
 
+  const handleSetUserLanguage = async () => {
+    getUserLanguage()
+    .then((data) => {
+      i18next.changeLanguage(data);
+    })
+    .catch(error => {
+      Alert.alert(error.message);
+    });
+  };
+
   const handlegetUserInfo = async () => {
       getUserTeam()
       .then((data) => {
@@ -69,7 +81,7 @@ function Team() {
     sellPlayer(playerName, price)
     .then(() => {
       setSellButtonPressed(false);
-      Alert.alert("Jugador vendido!");
+      Alert.alert(t("Jugador vendido"));
       handlegetUserInfo();
     })
     .catch(error => {
@@ -103,7 +115,7 @@ function Team() {
   const handleAlignPlayer = (player) => {
     const element = AlignedPlayers.find(alignedPlayer => alignedPlayer.name === player.name);
     if (element) {
-      Alert.alert("Este jugador ya esta alineado");
+      Alert.alert(t("Este jugador ya esta alineado"));
     } else {
       let actualPlayer = null;
       if (selectedPlayer === 1) {
@@ -187,7 +199,7 @@ function Team() {
   return (
     <View style = {styles.MainContainer}>
       <View style = {styles.HeaderContainer}>
-        <Text style = {styles.PrincipalTitle}>Equipo</Text>
+        <Text style = {styles.PrincipalTitle}>{t('Equipo')}</Text>
         <View style = {styles.MoneyContainer}>
           <Text style = {styles.Text}>{money}</Text>
         </View>
@@ -228,7 +240,7 @@ function Team() {
             </View>
             <TouchableOpacity onPress={() => handleOpenSellModal(player)}
               style = {styles.SellButton}>
-                <Text style = {styles.PlayerPrice}>Vender</Text>
+                <Text style = {styles.PlayerPrice}>{t('Vender')}</Text>
             </TouchableOpacity>
           </View>
           );
@@ -247,12 +259,12 @@ function Team() {
                 <Entypo name="cross" size={24} color="black" />
               </TouchableOpacity>
             </View>
-            <Text style = {styles.ModalText}>¿Seguro que quieres vender este jugador?</Text>
-            <Text style = {styles.PriceText}>Precio: {selectedPlayer.price}</Text>
+            <Text style = {styles.ModalText}>{t('¿Seguro que quieres vender este jugador?')}</Text>
+            <Text style = {styles.PriceText}>{t('Precio')} {selectedPlayer.price}</Text>
             <View style = {styles.PriceCointainer}>
               <TouchableOpacity onPress={() => handleSellPlayer(selectedPlayer.name, selectedPlayer.price)}
               style = {styles.ModalSellButton}>
-                <Text style = {styles.ModalSellButtonText}>Vender</Text>
+                <Text style = {styles.ModalSellButtonText}>{t('Vender')}</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -287,7 +299,7 @@ function Team() {
                     </View>
                     <TouchableOpacity onPress={() => handleAlignPlayer(player)}
                       style = {styles.AlignButton}>
-                        <Text style = {styles.PlayerPrice}>Alinear</Text>
+                        <Text style = {styles.PlayerPrice}>{t('Alinear')}</Text>
                     </TouchableOpacity>
                   </View>
                   );
@@ -307,7 +319,7 @@ function Team() {
                     </View>
                     <TouchableOpacity onPress={() => handleAlignPlayer(player)}
                       style = {styles.AlignButton}>
-                        <Text style = {styles.PlayerPrice}>Alinear</Text>
+                        <Text style = {styles.PlayerPrice}>{t('Alinear')}</Text>
                     </TouchableOpacity>
                   </View>
                   );
@@ -327,7 +339,7 @@ function Team() {
                     </View>
                     <TouchableOpacity onPress={() => handleAlignPlayer(player)}
                       style = {styles.AlignButton}>
-                        <Text style = {styles.PlayerPrice}>Alinear</Text>
+                        <Text style = {styles.PlayerPrice}>{t('Alinear')}</Text>
                     </TouchableOpacity>
                   </View>
                   );
@@ -347,7 +359,7 @@ function Team() {
                     </View>
                     <TouchableOpacity onPress={() => handleAlignPlayer(player)}
                       style = {styles.AlignButton}>
-                        <Text style = {styles.PlayerPrice}>Alinear</Text>
+                        <Text style = {styles.PlayerPrice}>{t('Alinear')}</Text>
                     </TouchableOpacity>
                   </View>
                   );

@@ -1,16 +1,26 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import {useNavigation} from '@react-navigation/native';
+import i18next, {languageResources} from '../../services/i18next';
+import { useTranslation } from 'react-i18next';
 import { StyleSheet, Text, View, TouchableOpacity, TextInput, Modal, FlatList } from 'react-native';
-import { getFirebaseAuth, signOutUser, checkloggedUser } from './FirebaseFunctions';
+import { getFirebaseAuth, signOutUser, checkloggedUser, getUserLanguage, changeUserLanguage } from './FirebaseFunctions';
 
 function Configuration() {
 
   //Variables
+  const {t} = useTranslation();
   const navigation = useNavigation();
+  const [CatButtonPressed, setCatButtonPressed] = useState(false);
+  const [EspButtonPressed, setEspButtonPressed] = useState(true);
+  const [EnButtonPressed, setEnButtonPressed] = useState(false);
 
   const auth = getFirebaseAuth();
 
   //Functions
+  useEffect(() => {
+    handleSetUserLanguage();
+  }, [])
+
   const handleSignOut = () => {
     signOutUser(auth)
     .then(() => {
@@ -22,37 +32,85 @@ function Configuration() {
     .catch(error => {
         Alert.alert(error.message);
     });
-  }
+  };
+
+  const handleSetUserLanguage = async () => {
+    getUserLanguage()
+    .then((data) => {
+        if (data == 'cat') {
+            setCatButtonPressed(true);
+            setEnButtonPressed(false);
+            setEspButtonPressed(false);
+        } else if (data == 'es') {
+            setCatButtonPressed(false);
+            setEnButtonPressed(false);
+            setEspButtonPressed(true);
+        } else {
+            setCatButtonPressed(false);
+            setEnButtonPressed(true);
+            setEspButtonPressed(false);
+        }
+    })
+    .catch(error => {
+      Alert.alert(error.message);
+    });
+  };
+
+  const handleChangeLanguage = (language) => {
+    if (language == 'cat') {
+        setCatButtonPressed(true);
+        setEnButtonPressed(false);
+        setEspButtonPressed(false);
+    } else if (language == 'es') {
+        setCatButtonPressed(false);
+        setEnButtonPressed(false);
+        setEspButtonPressed(true);
+    } else {
+        setCatButtonPressed(false);
+        setEnButtonPressed(true);
+        setEspButtonPressed(false);
+    }
+    changeUserLanguage(language)
+    .then((data) => {
+        i18next.changeLanguage(language);
+    })
+    .catch(error => {
+      Alert.alert(error.message);
+    });
+  };
 
   return (
     <View style = {styles.MainContainer}>
-        <Text style = {styles.PrincipalTitle}>Ajustes</Text>
+        <Text style = {styles.PrincipalTitle}>{t('Ajustes')}</Text>
         <View style = {styles.ProfileContainer}>
             <TouchableOpacity style = {styles.EditProfileButton}>
-                <Text style = {styles.EditProfileText}>Editar perfil</Text>
+                <Text style = {styles.EditProfileText}>{t('Editar perfil')}</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={handleSignOut}
             style = {styles.CloseSesionButton}>
-                <Text style = {styles.CloseSesionText}>Cerrar sesión</Text>
+                <Text style = {styles.CloseSesionText}>{t('Cerrar sesión')}</Text>
             </TouchableOpacity>
         </View>
         <View style = {styles.LanguageContainer}>
-            <Text style = {styles.LanguageTitle}>Idioma</Text>
+            <Text style = {styles.LanguageTitle}>{t('Idioma')}</Text>
             <View style = {styles.LanguageButtonsContainer}>
-                <TouchableOpacity style = {styles.SpanishLanguageButton}>
-                    <Text style = {styles.LanguageText}>Español</Text>
+                <TouchableOpacity onPress={() => handleChangeLanguage('es')}
+                style = {[styles.SpanishLanguageButton, { backgroundColor: EspButtonPressed ? '#2DBC07' : '#DCDCDC' }]}>
+                    <Text style = {styles.LanguageText}>{t('Español')}</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style = {styles.EnglishLanguageButton}>
-                    <Text style = {styles.LanguageText}>English</Text>
+                <TouchableOpacity onPress={() => handleChangeLanguage('en')}
+                style = {[styles.EnglishLanguageButton, { backgroundColor: EnButtonPressed ? '#2DBC07' : '#DCDCDC' }]}>
+                    <Text style = {styles.LanguageText}>{t('English')}</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style = {styles.CatalanLanguageButton}>
-                    <Text style = {styles.LanguageText}>Català</Text>
+                <TouchableOpacity onPress={() => handleChangeLanguage('cat')}
+                style = {[styles.CatalanLanguageButton, { backgroundColor: CatButtonPressed ? '#2DBC07' : '#DCDCDC' }]}>
+                    <Text style = {styles.LanguageText}>{t('Catalan')}</Text>
                 </TouchableOpacity>
             </View>
         </View>
         <View style = {styles.LeaveContainer}>
             <TouchableOpacity style = {styles.LeaveButton}>
-                <Text style = {styles.LeaveText}>Abandonar liga</Text>
+                <Text style = {styles.LeaveText}>{t('Abandonar liga')}</Text>
             </TouchableOpacity>
         </View>
     </View>

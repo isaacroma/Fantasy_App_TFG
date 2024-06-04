@@ -1,6 +1,8 @@
 import React, {useState, useCallback} from 'react'
 import {useNavigation, useFocusEffect} from '@react-navigation/native'
 import { Ionicons } from '@expo/vector-icons';
+import i18next from '../../services/i18next';
+import { useTranslation } from 'react-i18next';
 import { StyleSheet, Text, View, TouchableOpacity, TextInput, Alert } from 'react-native';
 import { initializeFirebase, getFirebaseAuth, loginUser, getUserLeague, addPlayersToFirestore } from './FirebaseFunctions';
 
@@ -8,6 +10,7 @@ import { initializeFirebase, getFirebaseAuth, loginUser, getUserLeague, addPlaye
 function Main() {
 
   //Variables
+  const {t} = useTranslation();
   const navigation = useNavigation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -470,29 +473,30 @@ function Main() {
         style = {styles.FootballIcon}
       />
       <Text style = {styles.MainTitle}>Fantasy App</Text>
-      <Text style = {styles.PrincipalTitle}>Bienvenido</Text>
+      <Text style = {styles.PrincipalTitle}>{t('Bienvenido')}</Text>
       <View style = {styles.InputsContainer}>
         <TextInput
           style = {styles.Input}
           onChangeText={setEmail}
-          placeholder={'Email'}
+          placeholder={t('Email')}
           value = {email}>
         </TextInput>
         <TextInput
           style = {styles.Input}
+          secureTextEntry={true}
           onChangeText={setPassword}
-          placeholder={'Contraseña'}
+          placeholder={t('Contraseña')}
           value = {password}>
         </TextInput>
         <TouchableOpacity 
         onPress={handleLogin}
         style = {styles.LoginButton}>
-          <Text style = {styles.LoginText}>Iniciar sesión</Text>
+          <Text style = {styles.LoginText}>{t('Iniciar sesión')}</Text>
         </TouchableOpacity>
         <View style = {styles.BottomTextContainer}>
-          <Text style = {styles.NotAnAccountText}>No tienes cuenta?</Text>
+          <Text style = {styles.NotAnAccountText}>{t('No tienes cuenta?')}</Text>
           <TouchableOpacity onPress={() => navigation.navigate('Register')}>
-            <Text style = {styles.GoToRegisterText}>Registrate</Text>
+            <Text style = {styles.GoToRegisterText}>{t('Registrate')}</Text>
           </TouchableOpacity>
         </View>
       </View>

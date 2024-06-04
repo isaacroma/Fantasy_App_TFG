@@ -2,15 +2,16 @@ import React, {useState, useRef, useEffect} from 'react'
 import {useNavigation, useFocusEffect} from '@react-navigation/native';
 import { Entypo } from '@expo/vector-icons';
 import { FontAwesome6 } from '@expo/vector-icons';
+import i18next from '../../services/i18next';
+import { useTranslation } from 'react-i18next';
 import { StyleSheet, Text, View, TouchableOpacity, TextInput, Modal, FlatList, ScrollView, Alert } from 'react-native';
 import { getMarketPlayers, placeBid, updateMarketPlayers, getPlayerBids, deletePlayerBid } from './FirebaseFunctions';
 
 function Market() {
 
-  //Navigation
-  const navigation = useNavigation();
-
   //Variables
+  const {t} = useTranslation();
+  const navigation = useNavigation();
   const scrollViewRef = useRef(null);
   const [selectedPlayer, setSelectedPlayer] = useState(null);
   const [actualBid, setActualBid] = useState(null);
@@ -64,14 +65,14 @@ function Market() {
   const handlePlaceBid = async (playerName, bid) => {
     const date = new Date();
     if (bid === null || parseInt(bid, 10) < selectedPlayer.price) {
-      Alert.alert("No puedes pujar menos de lo que vale el jugador");
+      Alert.alert(t("No puedes pujar menos de lo que vale el jugador"));
     } else {
       placeBid(playerName, parseInt(bid, 10), date)
       .then((data) => {
         setBuyButtonPressed(false);
         setActualBid(null);
         handlegetPlayerBids();
-        Alert.alert("Puja realizada");
+        Alert.alert(t("Puja realizada"));
       })
       .catch(error => {
         Alert.alert(error.message);
@@ -84,7 +85,7 @@ function Market() {
     .then((data) => {
       setSellButtonPressed(false);
       handlegetPlayerBids();
-      Alert.alert("Puja retirada");
+      Alert.alert(t("Puja retirada"));
     })
     .catch(error => {
       Alert.alert(error.message);
@@ -123,7 +124,7 @@ function Market() {
   return (
     <View style = {styles.MainContainer}>
       <View style = {styles.HeaderContainer}>
-        <Text style = {styles.PrincipalTitle}>Mercado</Text>
+        <Text style = {styles.PrincipalTitle}>{t('Mercado')}</Text>
         <FontAwesome6 
           name="money-bills" 
           size={50} 
@@ -132,7 +133,7 @@ function Market() {
         />
       </View>
       <TouchableOpacity onPress={() => handleUpdateMarket()}>
-        <Text>Actualizar Mercado</Text>
+        <Text>{t('Actualizar Mercado')}</Text>
       </TouchableOpacity>
       <ScrollView ref={scrollViewRef} style = {styles.ScrollView}>
         {players.map((player, index) => {
@@ -170,7 +171,7 @@ function Market() {
                 <Entypo name="cross" size={24} color="black" />
               </TouchableOpacity>
             </View>
-            <Text style = {styles.ModalText}>¿Que precio quieres pujar?</Text>
+            <Text style = {styles.ModalText}>{t('¿Que precio quieres pujar?')}</Text>
             <View style = {styles.PriceCointainer}>
               <TextInput
                 style = {styles.PriceInput}
@@ -181,7 +182,7 @@ function Market() {
               </TextInput>
               <TouchableOpacity onPress={() => handlePlaceBid(selectedPlayer.name, actualBid)}
               style = {styles.ModalBuyButton}>
-                <Text style = {styles.ModalBuyButtonText}>Pujar</Text>
+                <Text style = {styles.ModalBuyButtonText}>{t('Pujar')}</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -199,11 +200,11 @@ function Market() {
                 <Entypo name="cross" size={24} color="black" />
               </TouchableOpacity>
             </View>
-            <Text style = {styles.ModalText}>¿Seguro que quieres retirar la puja?</Text>
+            <Text style = {styles.ModalText}>{t('¿Seguro que quieres retirar la puja?')}</Text>
             <View style = {styles.PriceCointainer}>
               <TouchableOpacity onPress={() => handleDeleteBid(selectedPlayer.name)}
               style = {styles.ModalSellButton}>
-                <Text style = {styles.ModalSellButtonText}>Retirar</Text>
+                <Text style = {styles.ModalSellButtonText}>{t('Retirar')}</Text>
               </TouchableOpacity>
             </View>
           </View>

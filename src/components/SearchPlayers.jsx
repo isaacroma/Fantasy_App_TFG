@@ -3,15 +3,16 @@ import {useNavigation, useFocusEffect} from '@react-navigation/native';
 import { Entypo } from '@expo/vector-icons';
 import { FontAwesome6 } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
+import i18next from '../../services/i18next';
+import { useTranslation } from 'react-i18next';
 import { StyleSheet, Text, View, TouchableOpacity, TextInput, Modal, FlatList, ScrollView, Alert } from 'react-native';
 import { obtainPlayers, searchPlayer, filterPlayersByPosition, filterPlayersByPrice, addFovoritePlayer } from './FirebaseFunctions';
 
 function SearchPlayers() {
 
-  //Navigation
-  const navigation = useNavigation();
-
   //Variables
+  const {t} = useTranslation();
+  const navigation = useNavigation();
   const scrollViewRef = useRef(null);
   const [FilterButtonPresses, setFilterButtonPressed] = useState(false);
   const [AIButtonPressed, setAIButtonPressed] = useState(false);
@@ -194,7 +195,7 @@ function SearchPlayers() {
           <TextInput
             style = {styles.SearchInput}
             onChangeText={handleSearchPlayer}
-            placeholder={'Buscar jugador'}>
+            placeholder={t('Buscar jugador')}>
           </TextInput>
           <TouchableOpacity style = {styles.SearchButton}>
             <FontAwesome6 
@@ -207,12 +208,12 @@ function SearchPlayers() {
           <TouchableOpacity 
           style = {styles.FilterButton}
           onPress={handleFilters}>
-            <Text>Filtros</Text>
+            <Text>{t('Filtros')}</Text>
           </TouchableOpacity>
           <TouchableOpacity 
           onPress={() => setAIButtonPressed(true)}
           style = {styles.AIManagerButton}>
-            <Text>AI Manager</Text>
+            <Text>{t('AI Manager')}</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -257,7 +258,7 @@ function SearchPlayers() {
               </TouchableOpacity>
             </View>
             <View style = {styles.PositionFilterContainer}>
-              <Text style = {styles.Text}>Posición</Text>
+              <Text style = {styles.Text}>{t('Posición')}</Text>
               <View style = {styles.PositionButtonsContainer}>
                 <TouchableOpacity onPress={() => handleFilterPlayersByPosition('POR')}
                 style = {[styles.PORButton, { backgroundColor: PORButtonPressed ? '#2DBC07' : '#DCDCDC' }]}>
@@ -279,7 +280,7 @@ function SearchPlayers() {
             </View>
 
             <View style = {styles.PriceFilterContainer}>
-              <Text style = {styles.Text}>Precio</Text>
+              <Text style = {styles.Text}>{t('Precio')}</Text>
               <View style = {styles.PriceButtonsContainer}>
                 <TouchableOpacity onPress={() => handleFilterPlayersByPrice(0, 1000000)}
                 style = {[styles.Price1Button, { backgroundColor: Price1ButtonPressed ? '#2DBC07' : '#DCDCDC' }]}>
@@ -302,7 +303,7 @@ function SearchPlayers() {
             <View style = {styles.DeleteFiltersContainer}>
               <TouchableOpacity onPress={handleDeleteFilters}
               style = {styles.DeleteFiltersButton}>
-                <Text>Borrar Filtros</Text>
+                <Text>{t('Borrar Filtros')}</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -320,9 +321,9 @@ function SearchPlayers() {
                 <Entypo name="cross" size={24} color="black" />
               </TouchableOpacity>
             </View>
-            <Text style = {styles.AITitle}>Bienvenido al AI Manager</Text>
-            <Text style = {styles.AIText}>Agrega un jugador a favoritos para que el AI Manager realize una puja por este jugador cuando salga al mercado</Text>
-            <Text style = {styles.AIText2}>Nota: El manager va a pujar un 10% por sobre del valor del jugador siempre y cuando tu saldo lo permita</Text>
+            <Text style = {styles.AITitle}>{t('Bienvenido al AI Manager')}</Text>
+            <Text style = {styles.AIText}>{t('Agrega un jugador a favoritos para que el AI Manager realize una puja por este jugador cuando salga al mercado')}</Text>
+            <Text style = {styles.AIText2}>{t('Nota: El manager va a pujar un 10% por sobre del valor del jugador siempre y cuando tu saldo lo permita')}</Text>
           </View>
         </View>
       </Modal>
