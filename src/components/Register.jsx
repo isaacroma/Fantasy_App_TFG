@@ -1,11 +1,33 @@
-import React from 'react'
+import React, {useState} from 'react'
 import {useNavigation} from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
-import { StyleSheet, Text, View, TouchableOpacity, TextInput } from 'react-native';
+import i18next from '../../services/i18next';
+import { useTranslation } from 'react-i18next';
+import { StyleSheet, Text, View, TouchableOpacity, TextInput, Alert } from 'react-native';
+import { getFirebaseAuth, createUser } from './FirebaseFunctions';
+
 
 function Register() {
 
-    const navigation = useNavigation();
+  //Variables
+  const {t} = useTranslation();
+  const navigation = useNavigation();
+  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const auth = getFirebaseAuth();
+
+  //Functions
+  const handleRegister = () => {
+    createUser(auth, username, email, password)
+    .then(() => {
+      navigation.navigate('Home');
+    })
+    .catch(error => {
+      Alert.alert(error.message);
+    });
+  }
 
   return (
     <View style = {styles.MainContainer}>
@@ -16,29 +38,33 @@ function Register() {
         style = {styles.FootballIcon}
       />
       <Text style = {styles.MainTitle}>Fantasy App</Text>
-      <Text style = {styles.PrincipalTitle}>Bienvenido</Text>
+      <Text style = {styles.PrincipalTitle}>{t('Bienvenido')}</Text>
       <View style = {styles.InputsContainer}>
         <TextInput
           style = {styles.Input}
-          placeholder={'Nombre de usuario'}>
+          onChangeText={setUsername}
+          placeholder={t('Username')}>
         </TextInput>
         <TextInput
           style = {styles.Input}
-          placeholder={'Correo electronico'}>
+          onChangeText={setEmail}
+          placeholder={t('Email')}>
         </TextInput>
         <TextInput
           style = {styles.Input}
-          placeholder={'Contraseña'}>
+          secureTextEntry={true}
+          onChangeText={setPassword}
+          placeholder={t('Contraseña')}>
         </TextInput>
         <TouchableOpacity 
-        onPress={() => navigation.navigate('Home')}
+        onPress={handleRegister}
         style = {styles.RegisterButton}>
-          <Text style = {styles.RegisterText}>Registrarse</Text>
+          <Text style = {styles.RegisterText}>{t('Registrarse')}</Text>
         </TouchableOpacity>
         <View style = {styles.BottomTextContainer}>
-            <Text>Ya tienes cuenta?</Text>
+            <Text>{t('Ya tienes cuenta?')}</Text>
             <TouchableOpacity onPress={() => navigation.navigate('Home')}>
-            <Text style = {styles.GoToLoginText}>Inicia sesión</Text>
+            <Text style = {styles.GoToLoginText}>{t('Inicia sesión')}</Text>
             </TouchableOpacity>
         </View>
       </View>
