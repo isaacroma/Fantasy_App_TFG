@@ -24,6 +24,8 @@ function Market() {
   useFocusEffect(
     React.useCallback(() => {
       scrollViewRef.current.scrollTo({ y: 0, animated: false });
+      handlegetMarketPlayers();
+      handlegetPlayerBids();
     }, [])
   );
 
@@ -36,6 +38,7 @@ function Market() {
       getMarketPlayers()
       .then((data) => {
         setPlayers(data);
+        handlegetPlayerBids();
       })
       .catch(error => {
           Alert.alert(error.message);

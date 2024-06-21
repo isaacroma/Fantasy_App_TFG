@@ -33,6 +33,7 @@ function Team() {
   useFocusEffect(
     React.useCallback(() => {
       scrollViewRef.current.scrollTo({ y: 0, animated: false });
+      handlegetUserInfo();
     }, [])
   );
 
@@ -152,7 +153,7 @@ function Team() {
   const AlignedGoalscorers = Array(3).fill(null).map((_, index) => {
     const player = AlignedDCPlayers[index] || null;
     return (
-      <View>
+      <View key={index}>
         <TouchableOpacity onPress={() => handleOpenAlignModal('DC', player)} style={styles.TeamPlayerContainer}>
           <Ionicons name="person-circle-sharp" size={45} color="black" />
           {player && player.position === 'DC' && <Text style = {styles.AlignedPlayerName}>{player.name}</Text>}
@@ -164,7 +165,7 @@ function Team() {
   const AlignedMidfielders = Array(3).fill(null).map((_, index) => {
     const player = AlignedMCPlayers[index] || null;
     return (
-      <View>
+      <View key={index}>
         <TouchableOpacity onPress={() => handleOpenAlignModal('MC', player)} style={styles.TeamPlayerContainer}>
           <Ionicons name="person-circle-sharp" size={45} color="black" />
           {player && player.position === 'MC' && <Text style = {styles.AlignedPlayerName}>{player.name}</Text>}
@@ -176,7 +177,7 @@ function Team() {
   const AlignedDefenders = Array(4).fill(null).map((_, index) => {
     const player = AlignedDFCPlayers[index] || null;
     return (
-      <View>
+      <View key={index}>
         <TouchableOpacity onPress={() => handleOpenAlignModal('DFC', player)} style={styles.TeamPlayerContainer}>
           <Ionicons name="person-circle-sharp" size={45} color="black" />
           {player && player.position === 'DFC' && <Text style = {styles.AlignedPlayerName}>{player.name}</Text>}
@@ -188,7 +189,7 @@ function Team() {
   const AlignedGoalkeeper = Array(1).fill(null).map((_, index) => {
     const player = AlignedPORPlayers[index] || null;
     return (
-      <View>
+      <View key={index}>
         <TouchableOpacity onPress={() => handleOpenAlignModal('POR', player)} style={styles.TeamPlayerContainer}>
           <Ionicons name="person-circle-sharp" size={45} color="black" />
           {player && player.position === 'POR' && <Text style = {styles.AlignedPlayerName}>{player.name}</Text>}

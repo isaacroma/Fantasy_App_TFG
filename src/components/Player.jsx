@@ -224,14 +224,14 @@ const styles = StyleSheet.create({
   PlayerTeamPositionContainer: {
     alignItems: 'center',
     justifyContent: 'center',
-    width: '15%',
+    width: 100,
     height: 50,
-    right: 70,
+    right: 55,
   },
   PlayerNameContainer: {
     alignItems: 'center',
     justifyContent: 'center',
-    left: 70
+    left: 40
   },
   PlayerPointsContainer: {
     alignItems: 'center',
@@ -296,6 +296,11 @@ const styles = StyleSheet.create({
     marginBottom: 5
   },
   PlayerName: {
+    fontWeight: 'bold',
+    textAlign: 'center',
+    fontSize: 20
+  },
+  PlayerTeam: {
     fontWeight: 'bold',
     textAlign: 'center',
     fontSize: 20
