@@ -85,10 +85,7 @@ function Player() {
     <View style = {styles.MainContainer}>
         <View style = {styles.MainInfoContainer}>
           <View style = {styles.PlayerTeamPositionContainer}>
-            <Image
-              source={ImageUrl}
-              style={styles.Image}
-            />
+            <Text style = {styles.PlayerName}>{player.team}</Text>
             <View style = {[styles.PlayePositionContainer, {backgroundColor: getPositionColor(player.position)}]}>
               <Text style = {styles.PlayerPosition}>{player.position}</Text>
             </View>
@@ -227,14 +224,14 @@ const styles = StyleSheet.create({
   PlayerTeamPositionContainer: {
     alignItems: 'center',
     justifyContent: 'center',
-    width: '15%',
+    width: 100,
     height: 50,
-    right: 70,
+    right: 55,
   },
   PlayerNameContainer: {
     alignItems: 'center',
     justifyContent: 'center',
-    left: 70
+    left: 40
   },
   PlayerPointsContainer: {
     alignItems: 'center',
@@ -299,6 +296,11 @@ const styles = StyleSheet.create({
     marginBottom: 5
   },
   PlayerName: {
+    fontWeight: 'bold',
+    textAlign: 'center',
+    fontSize: 20
+  },
+  PlayerTeam: {
     fontWeight: 'bold',
     textAlign: 'center',
     fontSize: 20

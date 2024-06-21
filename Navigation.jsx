@@ -19,6 +19,7 @@ import Market from './src/components/Market.jsx';
 import SearchPlayers from './src/components/SearchPlayers.jsx';
 import Clasification from './src/components/Clasification.jsx';
 import Player from './src/components/Player.jsx';
+import Profile from './src/components/Profile.jsx';
 
 
 const HomeStackNavigator = createNativeStackNavigator();
@@ -53,6 +54,13 @@ function HomeStack() {
       <HomeStackNavigator.Screen
         name="Player"
         component={Player}
+        options={{
+          headerShown: false
+        }}
+      />
+      <HomeStackNavigator.Screen
+        name="Profile"
+        component={Profile}
         options={{
           headerShown: false
         }}

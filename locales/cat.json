@@ -21,7 +21,7 @@
     "Vender": "Vendre",
     "Alinear": "Alinear",
     "Ajustes": "Configuració",
-    "Editar perfil": "Editar perfil",
+    "Ver perfil": "Veure perfil",
     "Cerrar sesión": "Tancar sessió",
     "Idioma": "Idioma",
     "Español": "Espanyol",
@@ -48,7 +48,7 @@
     "Posición": "Posició",
     "Borrar Filtros": "Esborrar Filtres",
     "Bienvenido al AI Manager": "Benvingut al AI Manager",
-    "Agrega un jugador a favoritos para que el AI Manager realize una puja por este jugador cuando salga al mercado": "Afegeix un jugador a preferits perquè l¡AI Manager realitzi una oferta per aquest jugador quan surti al mercat",
+    "Agrega un jugador a favoritos para que el AI Manager realize una puja por este jugador cuando salga al mercado": "Afegeix un jugador a preferits perquè l'AI Manager realitzi una oferta per aquest jugador quan surti al mercat",
     "Nota: El manager va a pujar un 10% por sobre del valor del jugador siempre y cuando tu saldo lo permita": "Nota: El manager ofertarà un 10% per sobre del valor del jugador sempre que el teu saldo ho permeti",
     "Puntos": "Punts:",
     "Información detallada": "Informació detallada",
@@ -62,5 +62,10 @@
     "Propietario": "Propietari:",
     "Atras": "Enrere",
     "Jugadores": "Jugadors",
-    "Configuración": "Configuració"
+    "Configuración": "Configuració",
+    "Cargando...": "Carregant...",
+    "Perfil": "Perfil",
+    "Liga": "Lliga",
+    "Editar": "Editar",
+    "Guardar": "Guardar"
 }

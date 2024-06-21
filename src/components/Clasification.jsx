@@ -81,7 +81,7 @@ function Clasification() {
                 </TouchableOpacity>
             </View>
             <TouchableOpacity onPress={() => handlePlayRound()}>
-                <Text>{t('Jugar Jornada')}</Text>
+                <Text>Jugar Jornada</Text>
             </TouchableOpacity>
             <ScrollView ref={scrollViewRef} style = {styles.ScrollView}>
                 {users.map((user, index) => {
