@@ -85,10 +85,7 @@ function Player() {
     <View style = {styles.MainContainer}>
         <View style = {styles.MainInfoContainer}>
           <View style = {styles.PlayerTeamPositionContainer}>
-            <Image
-              source={ImageUrl}
-              style={styles.Image}
-            />
+            <Text style = {styles.PlayerName}>{player.team}</Text>
             <View style = {[styles.PlayePositionContainer, {backgroundColor: getPositionColor(player.position)}]}>
               <Text style = {styles.PlayerPosition}>{player.position}</Text>
             </View>

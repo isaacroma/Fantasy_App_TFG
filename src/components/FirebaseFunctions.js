@@ -30,6 +30,11 @@ let deletePlayerBidsFunction = null;
 let playRoundFunction = null;
 let getUserLanguageFunction = null;
 let changeUserLanguageFunction = null;
+let getUserFavPlayersFunction = null;
+let deleteFavoritePlayerFunction = null;
+let changeUserMultiplierFunction = null;
+let getUserInfoFunction = null;
+let leaveLeagueFunction = null;
 
 //Inicializa la app de Firebase
 export const initializeFirebase = () => {
@@ -56,6 +61,11 @@ export const initializeFirebase = () => {
   playRoundFunction = httpsCallable(getFunctions(app), 'playRound');
   getUserLanguageFunction = httpsCallable(getFunctions(app), 'getUserLanguage');
   changeUserLanguageFunction = httpsCallable(getFunctions(app), 'changeUserLanguage');
+  getUserFavPlayersFunction = httpsCallable(getFunctions(app), 'getUserFavPlayers');
+  deleteFavoritePlayerFunction = httpsCallable(getFunctions(app), 'deleteFavoritePlayer');
+  changeUserMultiplierFunction = httpsCallable(getFunctions(app), 'changeUserMultiplier');
+  getUserInfoFunction = httpsCallable(getFunctions(app), 'getUserInfo');
+  leaveLeagueFunction = httpsCallable(getFunctions(app), 'leaveLeague');
   return app;
 };
 
@@ -161,17 +171,6 @@ export const searchAllLeagues = async () => {
     console.log('Error message: ' + error.message);
   })
 };
-
-//Funcion para comprobar si hay un usuario logueado
-export const checkloggedUser = async () => {
-  const auth = getAuth(app);
-  const user = auth.currentUser;
-  if (user) {
-    console.log('Logged in user: ' + user.uid);
-  } else {
-    console.log('No user logged in');
-  }
-}
 
 ///Función para crear un documento en la colección "Leagues" asociada al usuario logueado
 export const joinLeague = async (leagueName) => {
@@ -413,5 +412,64 @@ export const changeUserLanguage = async (language) => {
     console.log('Error message: ' + error.message);
   })
 };
+
+export const getUserFavPlayers = async () => {
+  return getUserFavPlayersFunction()
+  .then((result) => {
+    const favoritePlayers = result.data.favoritePlayers;
+    return favoritePlayers;
+  })
+  .catch((error) => {
+    console.log('Error: ' + error);
+    console.log('Error message: ' + error.message);
+  })
+};
+
+export const deleteFavoritePlayer = async (playerName) => {
+  return deleteFavoritePlayerFunction({playerName: playerName})
+  .then((result) => {
+    console.log(result);
+    return result;
+  })
+  .catch((error) => {
+    console.log('Error: ' + error);
+    console.log('Error message: ' + error.message);
+  })
+};
+
+export const changeUserMultiplier = async (multiplier) => {
+  return changeUserMultiplierFunction({multiplier: multiplier})
+  .then((result) => {
+    return result;
+  })
+  .catch((error) => {
+    console.log('Error: ' + error);
+    console.log('Error message: ' + error.message);
+  })
+};
+
+export const getUserInfo = async () => {
+  return getUserInfoFunction()
+  .then((result) => {
+    const userInfo = result.data.userInfo;
+    return userInfo;
+  })
+  .catch((error) => {
+    console.log('Error: ' + error);
+    console.log('Error message: ' + error.message);
+  })
+};
+
+export const leaveLeague = async () => {
+  return leaveLeagueFunction()
+  .then((result) => {
+    return result;
+  })
+  .catch((error) => {
+    console.log('Error: ' + error);
+    console.log('Error message: ' + error.message);
+  })
+};
+
 
 

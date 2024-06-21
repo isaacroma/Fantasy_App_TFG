@@ -27,8 +27,8 @@ function Team() {
   const [SellButtonPressed, setSellButtonPressed] = useState(false);
   const [AlignButtonPressed, setAlignButtonPressed] = useState(false);
   const [selectedPlayerType, setSelectedPlayerType] = useState('POR');
-
-  const [AlignedPlayers, setAlignedPlayers] = useState([])
+  const [AlignedPlayers, setAlignedPlayers] = useState([]);
+  
   //Functions
   useFocusEffect(
     React.useCallback(() => {

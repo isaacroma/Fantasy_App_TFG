@@ -6,7 +6,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import i18next from '../../services/i18next';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, Text, View, TouchableOpacity, TextInput, Modal, FlatList, ScrollView, Alert } from 'react-native';
-import { obtainPlayers, searchPlayer, filterPlayersByPosition, filterPlayersByPrice, addFovoritePlayer } from './FirebaseFunctions';
+import { obtainPlayers, searchPlayer, filterPlayersByPosition, filterPlayersByPrice, addFovoritePlayer, getUserFavPlayers, deleteFavoritePlayer, changeUserMultiplier } from './FirebaseFunctions';
 
 function SearchPlayers() {
 
@@ -17,6 +17,7 @@ function SearchPlayers() {
   const [FilterButtonPresses, setFilterButtonPressed] = useState(false);
   const [AIButtonPressed, setAIButtonPressed] = useState(false);
   const [favoritePlayers, setFavoritePlayers] = useState([]);
+  const [userFavoritePlayers, setUserFavoritePlayers] = useState([]);
   const [players, setPlayers] = useState([]);
   const [allPlayers, setAllPlayers] = useState([]);
   const [playerName, setPlayerName] = useState('');
@@ -29,6 +30,10 @@ function SearchPlayers() {
   const [Price2ButtonPressed, setPrice2ButtonPressed] = useState(false);
   const [Price3ButtonPressed, setPrice3ButtonPressed] = useState(false);
   const [Price4ButtonPressed, setPrice4ButtonPressed] = useState(false);
+  const [TenButtonPressed, setTenButtonPressed] = useState(true);
+  const [TwentyButtonPressed, setTwentyButtonPressed] = useState(false);
+  const [ThirtyButtonPressed, setThirtyButtonPressed] = useState(false);
+  const [FiftyButtonPressed, setFiftyButtonPressed] = useState(false);
 
   //Functions
   useFocusEffect(
@@ -38,10 +43,14 @@ function SearchPlayers() {
   );
 
   useEffect(() => {
-    handleObtainPlayers();
+    handleGetUserFavPlayers();
   }, []);
 
-  const handleObtainPlayers = () => {
+  useEffect(() => {
+    handleObtainPlayers();
+  }, [userFavoritePlayers]);
+
+  const handleObtainPlayers = async () => {
     obtainPlayers()
     .then((data) => {
       setAllPlayers(data);
@@ -50,6 +59,21 @@ function SearchPlayers() {
     .catch(error => {
       Alert.alert(error.message);
     });
+  };
+
+  const handleGetUserFavPlayers = async () => {
+    getUserFavPlayers()
+    .then((data) => {
+      setUserFavoritePlayers(data);
+    })
+    .catch(error => {
+      Alert.alert(error.message);
+    });
+  };
+
+  const getFavPlayer = (player) => {
+    const FavPlayer = userFavoritePlayers.find(favPlayer => favPlayer.name === player.name);
+    return FavPlayer? true : false;
   };
 
   const handleFilters = () => {
@@ -77,7 +101,7 @@ function SearchPlayers() {
     }
   }
 
-  const handleSearchPlayer = (text) => {
+  const handleSearchPlayer = async (text) => {
     setSearchText(text); 
  
     if (text.length > 0) {
@@ -93,7 +117,7 @@ function SearchPlayers() {
     }
   };
 
-  const handleFilterPlayersByPosition = (position) => {
+  const handleFilterPlayersByPosition = async (position) => {
     setPrice1ButtonPressed(false);
     setPrice2ButtonPressed(false);
     setPrice3ButtonPressed(false);
@@ -129,7 +153,7 @@ function SearchPlayers() {
     });
   }
 
-  const handleFilterPlayersByPrice = (min, max) => {
+  const handleFilterPlayersByPrice = async (min, max) => {
     setPORButtonPressed(false);
     setDFCButtonPressed(false);
     setMCButtonPressed(false);
@@ -165,14 +189,56 @@ function SearchPlayers() {
     });
   }
 
-  const handleAddFavoritePlayer = (playerName, index) => {
-    addFovoritePlayer(playerName)
+  const handleChangeMultiplier = async (multiplier) => {
+    if (multiplier === 0.1) {
+      setTenButtonPressed(true);
+      setTwentyButtonPressed(false);
+      setThirtyButtonPressed(false);
+      setFiftyButtonPressed(false);
+    } else if (multiplier === 0.2) {
+      setTenButtonPressed(false);
+      setTwentyButtonPressed(true);
+      setThirtyButtonPressed(false);
+      setFiftyButtonPressed(false);
+    } else if (multiplier === 0.3) {
+      setTenButtonPressed(false);
+      setTwentyButtonPressed(false);
+      setThirtyButtonPressed(true);
+      setFiftyButtonPressed(false);
+    } else {
+      setTenButtonPressed(false);
+      setTwentyButtonPressed(false);
+      setThirtyButtonPressed(false);
+      setFiftyButtonPressed(true);
+    }
+
+    changeUserMultiplier(multiplier)
     .then(() => {
-      toggleFavorite(index);
+      console.log(multiplier);
     })
     .catch((error) => {
       Alert.alert(error.message);
     });
+  }
+
+  handleAddorDeleteFavPlayer = async (playerName, isFavPlayer, index) => {
+    if (isFavPlayer === true) {
+      deleteFavoritePlayer(playerName)
+      .then(() => {
+        handleGetUserFavPlayers();
+      })
+      .catch((error) => {
+        Alert.alert(error.message);
+      });
+    } else {
+      addFovoritePlayer(playerName)
+      .then(() => {
+        handleGetUserFavPlayers();
+      })
+      .catch((error) => {
+        Alert.alert(error.message);
+      });
+    }
   }
 
   const handleDeleteFilters = () => {
@@ -219,6 +285,7 @@ function SearchPlayers() {
       </View>
       <ScrollView ref={scrollViewRef} style = {styles.ScrollView}>
         {players.map((player, index) => {
+          const isFavPlayer = getFavPlayer(player);
           return (
             <TouchableOpacity onPress={() => navigation.navigate('Player', { player: player })}
             style = {styles.PlayerContainer} key={index}>
@@ -234,9 +301,9 @@ function SearchPlayers() {
               </View>
               <TouchableOpacity 
                 style = {styles.FavoriteButton}
-                onPress={() => handleAddFavoritePlayer(player.name, index)}>
+                onPress={() => handleAddorDeleteFavPlayer(player.name, isFavPlayer, index)}>
                 <MaterialIcons 
-                  name={favoritePlayers[index] ? "favorite" : "favorite-outline"}  
+                  name={isFavPlayer? "favorite" : "favorite-outline"}  
                   size={24} 
                   color="black" 
                 />
@@ -324,6 +391,25 @@ function SearchPlayers() {
             <Text style = {styles.AITitle}>{t('Bienvenido al AI Manager')}</Text>
             <Text style = {styles.AIText}>{t('Agrega un jugador a favoritos para que el AI Manager realize una puja por este jugador cuando salga al mercado')}</Text>
             <Text style = {styles.AIText2}>{t('Nota: El manager va a pujar un 10% por sobre del valor del jugador siempre y cuando tu saldo lo permita')}</Text>
+            <Text style = {styles.AIText}>{t('¿Que porcentaje quieres que puje Manager AI?')}</Text>
+            <View style = {styles.MultipliersContainer}>
+                <TouchableOpacity onPress={() => handleChangeMultiplier(0.1)}
+                style = {[styles.MultiplierButton, { backgroundColor: TenButtonPressed ? '#2DBC07' : '#DCDCDC' }]}>
+                  <Text style = {styles.Text}>10%</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => handleChangeMultiplier(0.2)}
+                style = {[styles.MultiplierButton, { backgroundColor: TwentyButtonPressed ? '#2DBC07' : '#DCDCDC' }]}>
+                  <Text style = {styles.Text}>20%</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => handleChangeMultiplier(0.3)}
+                style = {[styles.MultiplierButton, { backgroundColor: ThirtyButtonPressed ? '#2DBC07' : '#DCDCDC' }]}>
+                  <Text style = {styles.Text}>30%</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => handleChangeMultiplier(0.5)}
+                style = {[styles.MultiplierButton, { backgroundColor: FiftyButtonPressed ? '#2DBC07' : '#DCDCDC' }]}>
+                  <Text style = {styles.Text}>50%</Text>
+                </TouchableOpacity>
+            </View>
           </View>
         </View>
       </Modal>
@@ -661,7 +747,25 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 5,
     color: 'rgba(0, 0, 0, 0.5)'
-  }
+  },
+  MultipliersContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+    width: '100%',
+    height: 50,
+  },
+  MultiplierButton: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 20,
+    borderWidth: 1,
+    height: '80%',
+    width: 50,
+    backgroundColor: '#01CF24',
+    marginLeft: 5,
+    marginRight: 5
+  },
 });
 
 export default SearchPlayers;

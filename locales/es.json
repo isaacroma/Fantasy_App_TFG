@@ -21,7 +21,7 @@
     "Vender": "Vender",
     "Alinear": "Alinear",
     "Ajustes": "Ajustes",
-    "Editar perfil": "Editar perfil",
+    "Ver perfil": "Ver perfil",
     "Cerrar sesión": "Cerrar sesión",
     "Idioma": "Idioma",
     "Español": "Español",
@@ -62,5 +62,10 @@
     "Propietario": "Propietario:",
     "Atras": "Atras",
     "Jugadores": "Jugadores",
-    "Configuración": "Configuración"
+    "Configuración": "Configuración",
+    "Cargando...": "Cargando...",
+    "Perfil": "Perfil",
+    "Liga": "Liga",
+    "Editar": "Editar",
+    "Guardar": "Guardar"
 }

@@ -3,7 +3,7 @@ import {useNavigation} from '@react-navigation/native';
 import i18next, {languageResources} from '../../services/i18next';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, Text, View, TouchableOpacity, TextInput, Modal, FlatList } from 'react-native';
-import { getFirebaseAuth, signOutUser, checkloggedUser, getUserLanguage, changeUserLanguage } from './FirebaseFunctions';
+import { getFirebaseAuth, signOutUser, checkloggedUser, getUserLanguage, changeUserLanguage, leaveLeague } from './FirebaseFunctions';
 
 function Configuration() {
 
@@ -24,10 +24,17 @@ function Configuration() {
   const handleSignOut = () => {
     signOutUser(auth)
     .then(() => {
-        checkloggedUser()
-        .then(() => {
-            navigation.navigate('Home');
-        })
+        navigation.navigate('Home');
+    })
+    .catch(error => {
+        Alert.alert(error.message);
+    });
+  };
+
+  const handleLeaveLeague = async () => {
+    leaveLeague()
+    .then(() => {
+        navigation.navigate('Home');
     })
     .catch(error => {
         Alert.alert(error.message);
@@ -83,8 +90,9 @@ function Configuration() {
     <View style = {styles.MainContainer}>
         <Text style = {styles.PrincipalTitle}>{t('Ajustes')}</Text>
         <View style = {styles.ProfileContainer}>
-            <TouchableOpacity style = {styles.EditProfileButton}>
-                <Text style = {styles.EditProfileText}>{t('Editar perfil')}</Text>
+            <TouchableOpacity onPress={() => navigation.navigate('Profile')}
+            style = {styles.EditProfileButton}>
+                <Text style = {styles.EditProfileText}>{t('Ver perfil')}</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={handleSignOut}
             style = {styles.CloseSesionButton}>
@@ -109,7 +117,8 @@ function Configuration() {
             </View>
         </View>
         <View style = {styles.LeaveContainer}>
-            <TouchableOpacity style = {styles.LeaveButton}>
+            <TouchableOpacity onPress={handleLeaveLeague}
+            style = {styles.LeaveButton}>
                 <Text style = {styles.LeaveText}>{t('Abandonar liga')}</Text>
             </TouchableOpacity>
         </View>

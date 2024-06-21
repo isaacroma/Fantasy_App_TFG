@@ -21,7 +21,7 @@
     "Vender": "Sell",
     "Alinear": "Align",
     "Ajustes": "Settings",
-    "Editar perfil": "Edit Profile",
+    "Ver perfil": "Profile",
     "Cerrar sesión": "Log Out",
     "Idioma": "Language",
     "Español": "Spanish",
@@ -62,5 +62,10 @@
     "Propietario": "Owner:",
     "Atras": "Back",
     "Jugadores": "Players",
-    "Configuración": "Settings"
+    "Configuración": "Settings",
+    "Cargando...": "Loading...",
+    "Perfil": "Profile",
+    "Liga": "League",
+    "Editar": "Edit",
+    "Guardar": "Save"
 }
