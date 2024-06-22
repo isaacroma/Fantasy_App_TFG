@@ -67,5 +67,7 @@
     "Perfil": "Perfil",
     "Liga": "Lliga",
     "Editar": "Editar",
-    "Guardar": "Guardar"
+    "Guardar": "Guardar",
+    "Debes realizar una puja valida": "Has de realitzar una aposta vàlida",
+    "Ya existe una liga con ese nombre": "Ja existeix una lliga amb aquest nom"
 }

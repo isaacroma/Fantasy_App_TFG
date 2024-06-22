@@ -69,6 +69,10 @@ function Market() {
     const date = new Date();
     if (bid === null || parseInt(bid, 10) < selectedPlayer.price) {
       Alert.alert(t("No puedes pujar menos de lo que vale el jugador"));
+      setActualBid(null);
+    } else if (isNaN(parseInt(bid, 10))) {
+      Alert.alert(t("Debes realizar una puja valida"));
+      setActualBid(null);
     } else {
       placeBid(playerName, parseInt(bid, 10), date)
       .then((data) => {

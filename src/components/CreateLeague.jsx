@@ -7,7 +7,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Entypo } from '@expo/vector-icons';
 import i18next from '../../services/i18next';
 import { useTranslation } from 'react-i18next';
-import { StyleSheet, Text, View, TouchableOpacity, TextInput, Modal, FlatList, Alert } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, TextInput, Modal, FlatList, Alert, ActivityIndicator  } from 'react-native';
 import { createLeague, searchLeague, searchAllLeagues, joinLeague } from './FirebaseFunctions';
 
 function CreateLeague() {
@@ -20,6 +20,7 @@ function CreateLeague() {
   const [searchResults, setSearchResults] = useState([]);
   const [SearchButtonPressed, setSearchButtonPressed] = useState(false);
   const [CreateButtonPressed, setCreateButtonPressed] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [leagues, setLeagues] = useState([]);
 
   //Functions
@@ -42,15 +43,18 @@ function CreateLeague() {
   }
 
   const handleCreateLeague = () => {
+    setIsLoading(true);
     createLeague(leagueName)
     .then(response => {
       console.log(response);
       if (response.success === true) {
           setTimeout(() => {
               navigation.navigate('BottomTab');
+              setIsLoading(false); 
           }, 5000);
       } else {
-          Alert.alert(response.error);
+          Alert.alert(t("Ya existe una liga con ese nombre"));
+          setIsLoading(false);
       }
     })
     .catch(error => {
@@ -86,9 +90,11 @@ function CreateLeague() {
   };
 
   const handleJoinLeague = (leagueName) => {
+    setIsLoading(true);
     joinLeague(leagueName)
     .then(() => {
       navigation.navigate('BottomTab');
+      setIsLoading(false); 
     })
     .catch((error) => {
       Alert.alert(error.message);
@@ -171,6 +177,9 @@ function CreateLeague() {
                 style = {styles.CreateLeagueButton}>
                 <Text style = {styles.SearchText}>{t('Crear Liga')}</Text>
               </TouchableOpacity>
+              <View style = {styles.LoadingContainer}>
+                {isLoading && <ActivityIndicator size="large" color="#0000ff" />} 
+              </View>
             </View>
           </View>
         </View>
@@ -201,6 +210,9 @@ function CreateLeague() {
                 color="black" />
               </TouchableOpacity>
             </View>
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                {isLoading && <ActivityIndicator size="large" color="#0000ff" />} 
+            </View>
             <View style = {styles.LeaguesContainer}>
               <FlatList
               data={searchResults}
@@ -218,6 +230,11 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'white',
     alignItems: 'center',
+  },
+  LoadingContainer: {
+    flex: 1, 
+    justifyContent: 'center', 
+    alignItems: 'center', 
   },
   SearchButtonContainer: {
     height: '20%',

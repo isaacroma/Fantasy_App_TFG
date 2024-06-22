@@ -67,5 +67,7 @@
     "Perfil": "Profile",
     "Liga": "League",
     "Editar": "Edit",
-    "Guardar": "Save"
+    "Guardar": "Save",
+    "Debes realizar una puja valida": "You have to place a valid bid",
+    "Ya existe una liga con ese nombre": "A league with this name already exists"
 }

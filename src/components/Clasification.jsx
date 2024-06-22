@@ -3,7 +3,7 @@ import {useNavigation, useFocusEffect} from '@react-navigation/native';
 import { FontAwesome5 } from '@expo/vector-icons';
 import i18next from '../../services/i18next';
 import { useTranslation } from 'react-i18next';
-import { StyleSheet, Text, View, TouchableOpacity, TextInput, Modal, Alert, FlatList, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, TextInput, Modal, Alert, FlatList, ScrollView, ActivityIndicator } from 'react-native';
 import { getGeneralClassification, playRound } from './FirebaseFunctions';
 
 function Clasification() {
@@ -14,6 +14,7 @@ function Clasification() {
     const scrollViewRef = useRef(null);
     const [isGeneralButtonActive, setisGeneralButtonActive] = useState(true);
     const [isJourneyButtonActive, setisJourneyButtonActive] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
     const [users, setUsers] = useState([]);
     //Functions
     useFocusEffect(
@@ -37,9 +38,11 @@ function Clasification() {
     };
 
     const handlePlayRound = async () => {
+        setIsLoading(true);
         playRound()
         .then((data) => {
             Alert.alert(t("Jornada jugada"));
+            setIsLoading(false);
             handlegetGeneralClassification();
         })
         .catch(error => {
@@ -95,7 +98,9 @@ function Clasification() {
                     );
                 })}
             </ScrollView>
-
+            <View style = {styles.LoadingContainer}>
+                {isLoading && <ActivityIndicator size="large" color="#0000ff" />} 
+              </View>
         </View>
     );
 }
@@ -153,6 +158,12 @@ const styles = StyleSheet.create({
     },
     Text: {
         fontWeight: 'bold'
+    },
+    LoadingContainer: {
+        flex: 1, 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        bottom: 200
     },
 
     //Icons
